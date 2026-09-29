@@ -531,7 +531,7 @@ done
 # BOTH DIRECTIONS, because a rename is the string-replace-that-silently-misses in its most
 # dangerous form: the skill still loads under its old directory name, so nothing fails —
 # the documents just promise a name that no longer answers. Backticks are required: a bare
-# /mwk-… also matches the repo path in github.com/matewishkey/mwk-genie.
+# /mwk-… also matched the repo path when it was github.com/matewishkey/mwk-genie.
 offered=$(grep -ohE '`/mwk-[a-z]+`' README.md HOW-TO.md dot_claude/create_CLAUDE.md | tr -d '`/' | sort -u)
 ondisk=$(for d in dot_claude/skills/*/; do basename "$d"; done | sort -u)
 # Every skill must be in EACH person-facing document, not just somewhere — HOW-TO.md is the

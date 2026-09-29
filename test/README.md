@@ -8,7 +8,7 @@ bash test/rehearse.sh <sha> # minutes, Docker. The real install in a clean ubunt
 And the third one, which is different in kind:
 
 ```
-curl -fsSL https://raw.githubusercontent.com/matewishkey/mwk-genie/<sha>/test/on-this-machine.sh \
+curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/<sha>/test/on-this-machine.sh \
   | MWK_REF=<sha> sh
 ```
 

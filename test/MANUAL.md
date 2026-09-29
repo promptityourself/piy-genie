@@ -10,7 +10,7 @@ Every ✗ here is information, not a defect. Write down what actually happened.
 
 **Take the default path, because that is the one being tested.** v3 has been on `main`
 since 2026-09-17, so the prompts a guest would use are the ones to use:
-`https://raw.githubusercontent.com/matewishkey/mwk-genie/main/prompts/install.md`, and the
+`https://raw.githubusercontent.com/promptityourself/piy-genie/main/prompts/install.md`, and the
 same for `setup.md`. Paste the fenced block. Say nothing to prompt two about branches — it
 takes `main` on its own, and watching it do that unaided is part of the test.
 
@@ -76,7 +76,7 @@ deliberately testing something unmerged.
 ## Then the automated pass on the same machine
 
 ```
-curl -fsSL https://raw.githubusercontent.com/matewishkey/mwk-genie/<sha>/test/on-this-machine.sh \
+curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/<sha>/test/on-this-machine.sh \
   | MWK_REF=<sha> sh
 ```
 

@@ -72,7 +72,7 @@ read. If they want something taken out, take it out and show them again.
 ## 5. File it
 
 ```
-gh issue create -R matewishkey/mwk-genie \
+gh issue create -R promptityourself/piy-genie \
   -t "<the title>" -b "<the body>"
 ```
 
@@ -83,7 +83,7 @@ somebody reads it, and they will get an email if there are questions.
 make it their problem. Save the report next to their work, tell them the path,
 and give them this to open when they are ready:
 
-    https://github.com/matewishkey/mwk-genie/issues/new/choose
+    https://github.com/promptityourself/piy-genie/issues/new/choose
 
 ## 6. Then get them unstuck
 

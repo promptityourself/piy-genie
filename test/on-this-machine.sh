@@ -1,7 +1,7 @@
 #!/bin/sh
 # The whole thing, on a real machine, in one command:
 #
-#   curl -fsSL https://raw.githubusercontent.com/matewishkey/mwk-genie/<ref>/test/on-this-machine.sh \
+#   curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/<ref>/test/on-this-machine.sh \
 #     | MWK_REF=<ref> sh
 #
 # It installs, checks, exercises, uninstalls, and reinstalls.
@@ -16,7 +16,7 @@ set -u
 
 REF="${MWK_REF:-main}"
 KIT="$HOME/projects/mwk-genie"
-RAW="https://raw.githubusercontent.com/matewishkey/mwk-genie/$REF"
+RAW="https://raw.githubusercontent.com/promptityourself/piy-genie/$REF"
 
 if [ -t 1 ]; then
   case "${COLORTERM:-}" in truecolor|24bit) RED=$(printf '\033[38;2;226;52;43m');; *) RED=$(printf '\033[38;5;203m');; esac

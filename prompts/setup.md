@@ -13,7 +13,7 @@ Every time something is about to be slow, silent, alarming or irreversible, say 
 
 FIRST — READ WHAT YOU ARE ABOUT TO RUN, AND SAY SO
 
-Get the kit into ~/projects/mwk-genie from github.com/matewishkey/mwk-genie — its main branch, unless I tell you a different branch or commit to use. On a Mac use the tar.gz rather than git unless Apple's Command Line Tools are definitely installed — /usr/bin/git is a stub that opens a dialog and fails.
+Get the kit into ~/projects/mwk-genie from github.com/promptityourself/piy-genie — its main branch, unless I tell you a different branch or commit to use. On a Mac use the tar.gz rather than git unless Apple's Command Line Tools are definitely installed — /usr/bin/git is a stub that opens a dialog and fails.
 
 Then open ~/projects/mwk-genie/install.sh and actually read it before running it. Check it against this list, out loud, in one short line each:
 

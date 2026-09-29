@@ -28,7 +28,7 @@ docker run --rm ubuntu:24.04 bash -euc "
   apt-get update -qq >/dev/null && apt-get install -y -qq curl ca-certificates zsh python3 >/dev/null
   useradd -m -s /bin/bash guest
 
-  su - guest -c 'curl -fsSL https://raw.githubusercontent.com/matewishkey/mwk-genie/$REF/install.sh | MWK_REF=$REF sh' \
+  su - guest -c 'curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/$REF/install.sh | MWK_REF=$REF sh' \
     || { echo 'INSTALL FAILED'; exit 1; }
 
   echo; echo '===== ASSERTIONS ====='
@@ -157,7 +157,7 @@ PY'
   # worst thing this kit could do, so the trash is load-bearing rather than politeness.
   chk 'the key is in the trash, not erased'     'ls ~/.local/share/Trash/files/keys.txt'
 
-  su - guest -c 'curl -fsSL https://raw.githubusercontent.com/matewishkey/mwk-genie/$REF/install.sh | MWK_REF=$REF sh' >/dev/null 2>&1 \
+  su - guest -c 'curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/$REF/install.sh | MWK_REF=$REF sh' >/dev/null 2>&1 \
     || { echo '  REINSTALL FAILED'; FAILED=1; }
   chk 'reinstall: mwk runs again'               'bash -ic \"command -v mwk\"'
   chk 'reinstall: settings say auto again'      'grep -q \"\\\"defaultMode\\\": *\\\"auto\\\"\" ~/.claude/settings.json'

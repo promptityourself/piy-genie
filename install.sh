@@ -1,7 +1,7 @@
 #!/bin/sh
 # The whole setup, as one command they paste once:
 #
-#   curl -fsSL https://raw.githubusercontent.com/matewishkey/mwk-genie/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/main/install.sh | sh
 #
 # WHY A SCRIPT AND NOT AN AGENT WORKING THROUGH A DOCUMENT (mate's call, 2026-08-30):
 # v1 asked Claude to read SETUP.md and carry out ~30 steps by interpreting prose. Every
@@ -12,7 +12,7 @@
 # POSIX sh on purpose: it runs before anything is installed, including bash on a minimal image.
 set -eu
 
-REPO="https://github.com/matewishkey/mwk-genie"
+REPO="https://github.com/promptityourself/piy-genie"
 # Which branch to install. Defaults to main; the rehearsal sets it to test a branch for real
 # rather than pre-placing the kit, which would be the test arranging its own precondition.
 REF="${MWK_REF:-main}"

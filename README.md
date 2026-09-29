@@ -57,4 +57,4 @@ No Homebrew, no apt. Every tool is a pinned binary from its own project, fetched
 
 [`CLAUDE.md`](CLAUDE.md) is the notes for whoever changes this repo — the reasoning, and the things that will bite you. [`test/`](test/) says what is checked automatically and what still needs a human.
 
-Something broken? `/mwk-bug` writes the report for you, or [open one here](https://github.com/matewishkey/mwk-genie/issues/new/choose).
+Something broken? `/mwk-bug` writes the report for you, or [open one here](https://github.com/promptityourself/piy-genie/issues/new/choose).

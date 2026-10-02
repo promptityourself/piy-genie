@@ -171,7 +171,10 @@ PY'
   pkill -x miniserve 2>/dev/null || true; sleep 1
   useradd -m -s /bin/bash veteran
   chkv(){ if su - veteran -c \"\$2\" >/dev/null 2>&1; then ok \"\$1\" PASS; else ok \"\$1\" FAIL; FAILED=1; fi; }
-  su - veteran -c 'curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/9c62ddd/install.sh | MWK_REF=9c62ddd sh' >/dev/null 2>&1 \
+  # 9c62ddd predates the mise pin, and the mise it would pick today refuses its lockfile. A
+  # machine really set up then got a working mise at the time; MISE_VERSION reaches mise.run
+  # through the old script's environment and stands in for that, nothing more.
+  su - veteran -c 'curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/9c62ddd/install.sh | MWK_REF=9c62ddd MISE_VERSION=v2026.10.0 sh' >/dev/null 2>&1 \
     || { echo '  OLD INSTALL FAILED'; FAILED=1; }
   chkv 'precondition: the old kit is in place and mwk runs' 'bash -ic \"command -v mwk\" && test -f ~/mwk-work/README.md'
   su - veteran -c 'mkdir -p ~/mwk-work/proj && echo THEIR-PAGE > ~/mwk-work/proj/index.html'

@@ -180,6 +180,9 @@ grep -q 'xcode-select -p' bin/executable_piy && ok "git is tested the macOS way 
   || no "git is tested the macOS way" "command -v git is true with no dev tools — the store would never become a repo"
 
 head_ "install.sh — the pins actually reach the global config"
+grep -qE '^MISE_PIN="v[0-9]{4}\.[0-9]+\.[0-9]+"$' install.sh && grep -q 'MISE_VERSION="\$MISE_PIN" sh' install.sh \
+  && ok "mise itself is pinned (mise.run's newest release once broke every install)" \
+  || no "mise itself is pinned" "mise.run picks a day-old release, and 2026.9.18 refused the lockfile"
 # The old regex was $-anchored and a trailing comment on the pin line made it return
 # nothing for three of six tools, which mise then pinned to "latest". Run the shipped loop's
 # extraction against the shipped file and demand a version for every tool.

@@ -101,7 +101,13 @@ else
 fi
 
 say "2/6  Installing mise (this is the only tool that installs tools)"
-if have mise; then step "already installed"; else curl -fsSL https://mise.run | sh >/dev/null; fi
+# mise is PINNED, like everything it installs. Unpinned, mise.run hands out whichever release
+# is a day old, and on 2026-10-02 that was 2026.9.18: it refused the sops pin in mise.lock
+# ("Lockfile requires SLSA provenance … no signer_identity"), and every fresh install died
+# at 3/6. Fixed upstream in 2026.10.0 (jdx/mise#13856). MISE_VERSION is mise.run's own
+# variable and skips its release-age rule. Bump it on purpose, after a rehearsal.
+MISE_PIN="v2026.10.0"
+if have mise; then step "already installed"; else curl -fsSL https://mise.run | MISE_VERSION="$MISE_PIN" sh >/dev/null; fi
 PATH="$BIN:$HOME/.local/share/mise/shims:$PATH"; export PATH
 
 say "3/6  Installing chezmoi, sops, age, miniserve, jq and gh"

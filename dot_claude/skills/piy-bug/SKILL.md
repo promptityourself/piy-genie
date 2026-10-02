@@ -1,6 +1,6 @@
 ---
-name: mwk-bug
-description: Report a bug in the Mate Wish Key kit itself — write the report out of what actually happened, show it to them, and file it on GitHub once they say yes. Use when they say something is broken, that a command did not work, that this is a bug, or ask how to report one.
+name: piy-bug
+description: Report a bug in the Prompt It Yourself kit itself — write the report out of what actually happened, show it to them, and file it on GitHub once they say yes. Use when they say something is broken, that a command did not work, that this is a bug, or ask how to report one.
 argument-hint: "[what went wrong, if they said]"
 ---
 
@@ -16,7 +16,7 @@ What they said, if anything: `$ARGUMENTS`
 **Do this before writing anything.** Three different things get called "a bug"
 and only one of them belongs here:
 
-- **This kit** — `mwk`, the prompt, the bar at the bottom, `CLAUDE.md`, one of the `/mwk-`
+- **This kit** — `piy`, the prompt, the bar at the bottom, `CLAUDE.md`, one of the `/piy-`
   commands, or a step in the setup. **That is a bug report. Carry on.**
 - **Claude Code itself**, or a plugin somebody else wrote. Say so plainly, say
   where it actually goes, and offer to help them get there. Filing it with us
@@ -37,7 +37,7 @@ look:
 - **What they expected instead.** Only ask if it is genuinely not obvious.
 - **Which machine** — macOS, Windows with WSL, or Linux.
 - **Versions** — `claude --version`, and the kit's version from
-  `git -C ~/projects/mwk-genie rev-parse --short HEAD`. There is no version file
+  `git -C ~/projects/piy-genie rev-parse --short HEAD`. There is no version file
   any more — the plugin manifest that used to carry one is gone, and a commit is
   a better answer anyway. If the kit is not in that folder, say so in the report
   rather than guessing.

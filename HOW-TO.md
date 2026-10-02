@@ -70,7 +70,7 @@ In the window step 1 left open, paste this:
    answer, not assumed. When it needs a key from you, you type it in a second terminal tab
    — never in the chat, so it never ends up in a transcript.
 5. **Make you a key of your own**, the first time you store one. It will tell you to copy
-   one line into your password manager, as an entry called **mwk key**. **Do that, once.**
+   one line into your password manager, as an entry called **piy key**. **Do that, once.**
    It is the only way into your keys — on this computer and on the next one — and nobody
    can make it again. The agent never sees it.
 6. **Make your first project** — a folder with the right shape, saving turned on, a private
@@ -85,13 +85,13 @@ In the window step 1 left open, paste this:
 | `http://127.0.0.1:29200/` | **your page — bookmark it.** How all of this works, in plain English, and under it every page the agent writes for you |
 | `~/projects/<your thing>/` | your work: `input/` for things you drop in, `archive/` for what has been dealt with |
 | `~/projects/keys/` | your keys, encrypted, in a repo of their own, pushed to a private copy on GitHub |
-| `mwk add NAME` | puts a key in that store — you type it, so it never goes through the chat |
+| `piy add NAME` | puts a key in that store — you type it, so it never goes through the chat |
 
-And eight things you can ask for by name, or just say in normal words: `/mwk-wish` turns
-an idea into a researched answer and a first version, `/mwk-onboard` connects your
-accounts, `/mwk-new` starts a project, `/mwk-save` saves and pushes it and tidies up,
-`/mwk-learn` adds to your record of what you have learnt, `/mwk-review` is a second
-opinion, `/mwk-tasks` is what is open across your projects, `/mwk-bug` reports anything
+And eight things you can ask for by name, or just say in normal words: `/piy-wish` turns
+an idea into a researched answer and a first version, `/piy-onboard` connects your
+accounts, `/piy-new` starts a project, `/piy-save` saves and pushes it and tidies up,
+`/piy-learn` adds to your record of what you have learnt, `/piy-review` is a second
+opinion, `/piy-tasks` is what is open across your projects, `/piy-bug` reports anything
 in the kit that is broken.
 
 Everything else — seeing which keys you have, a new computer, changing a key, taking it all

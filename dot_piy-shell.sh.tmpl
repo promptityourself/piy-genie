@@ -1,4 +1,4 @@
-# ~/.mwk-shell.sh — written by chezmoi from mwk-genie. Do not edit; edit the kit and
+# ~/.piy-shell.sh — written by chezmoi from piy-genie. Do not edit; edit the kit and
 # run `chezmoi apply`. Their .zshrc/.bashrc holds ONE line that sources this file.
 #
 # WHY IT IS A SEPARATE FILE. v1 fenced a block inside ~/.zshrc with markers and told the
@@ -18,10 +18,10 @@ case ":$PATH:" in
   *":$HOME/.local/share/mise/shims:"*) ;;
   *) PATH="$HOME/.local/share/mise/shims:$PATH" ;;
 esac
-# chezmoi places `mwk` at ~/bin/mwk, and ~/bin is NOT on PATH by default anywhere that
+# chezmoi places `piy` at ~/bin/piy, and ~/bin is NOT on PATH by default anywhere that
 # matters: macOS builds PATH from /etc/paths via path_helper and never adds it; on Ubuntu
 # only ~/.profile does, and only for a login shell. Without this line the very first thing
-# the person is told to run — `mwk add` — is `command not found`.
+# the person is told to run — `piy add` — is `command not found`.
 case ":$PATH:" in
   *":$HOME/bin:"*) ;;
   *) PATH="$HOME/bin:$PATH" ;;
@@ -34,7 +34,7 @@ export PATH
 # for two definitions to disagree.
 
 # ── their page: http://127.0.0.1:29200/ ───────────────────────────────────────────────
-# A file server over ~/mwk-work — the pages the agent writes for them, one folder per
+# A file server over ~/piy-work — the pages the agent writes for them, one folder per
 # project, README.md rendered at every folder (the root one is the howto). Started here,
 # from the first interactive shell after a boot, so it needs no launchd, no systemd, and
 # behaves identically on macOS and WSL. A Windows browser reaches it on localhost by
@@ -51,13 +51,13 @@ export PATH
 # exit 0 means something answered on 29200, and connection-refused means start it.
 # Flags are from `miniserve 0.35.0 --help`, not memory (-q there is a QR code, not quiet).
 # `! -L`: miniserve with -P refuses a symlinked ROOT and exits at once (measured), so a
-# symlinked ~/mwk-work would have respawned a doomed process from every new shell, with
+# symlinked ~/piy-work would have respawned a doomed process from every new shell, with
 # every message going to /dev/null. Its output goes to a log now, so "the page will not
-# open" has somewhere to look: ~/.mwk-server.log.
-if [ -d "$HOME/mwk-work" ] && [ ! -L "$HOME/mwk-work" ] && command -v miniserve >/dev/null 2>&1 \
+# open" has somewhere to look: ~/.piy-server.log.
+if [ -d "$HOME/piy-work" ] && [ ! -L "$HOME/piy-work" ] && command -v miniserve >/dev/null 2>&1 \
    && ! curl -s -o /dev/null --max-time 1 http://127.0.0.1:29200/ 2>/dev/null; then
-  ( nohup miniserve -i 127.0.0.1 -p 29200 -P --readme -t "Your page" "$HOME/mwk-work" \
-      >>"$HOME/.mwk-server.log" 2>&1 & )
+  ( nohup miniserve -i 127.0.0.1 -p 29200 -P --readme -t "Your page" "$HOME/piy-work" \
+      >>"$HOME/.piy-server.log" 2>&1 & )
 fi
 
 
@@ -74,12 +74,12 @@ fi
 # smallest prompt that answers the three questions people actually ask: where am I, is
 # this a project with history, and have I saved?
 #
-# Mate Wish Key red is #e2342b. zsh takes it literally on a truecolor terminal; everything
+# Prompt It Yourself red is #e2342b. zsh takes it literally on a truecolor terminal; everything
 # else gets xterm-256 colour 203, which is the nearest red. Both are set, so no terminal
 # ends up with a raw escape sequence in the prompt.
 #
 # The `*` is the one to explain out loud: it means there is work here you have not saved.
-# `/mwk-save` clears it. It is referenced by that skill and by the page they keep, so if
+# `/piy-save` clears it. It is referenced by that skill and by the page they keep, so if
 # this ever moves, those move with it.
 
 if [ -n "${ZSH_VERSION:-}" ]; then
@@ -96,12 +96,12 @@ if [ -n "${ZSH_VERSION:-}" ]; then
 elif [ -n "${BASH_VERSION:-}" ]; then
   # bash has no vcs_info, so this is the same three facts by hand. Kept quiet and cheap:
   # every failure path prints nothing rather than an error into the prompt.
-  __mwk_git() {
+  __piy_git() {
     b=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) || return 0
     d=''; git diff --quiet --ignore-submodules HEAD 2>/dev/null || d='*'
     printf ' \001\033[2m\002%s\001\033[0m\033[38;5;203m\002%s\001\033[0m\002' "$b" "$d"
   }
-  PS1='\[\033[38;5;203m\]\W\[\033[0m\]$(__mwk_git) \[\033[38;5;203m\]›\[\033[0m\] '
+  PS1='\[\033[38;5;203m\]\W\[\033[0m\]$(__piy_git) \[\033[38;5;203m\]›\[\033[0m\] '
 fi
 
 # Colour everywhere else too. macOS ls wants -G and its own variable; GNU ls wants

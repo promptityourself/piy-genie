@@ -1,5 +1,5 @@
 ---
-name: mwk-new
+name: piy-new
 description: Start a new project for someone who is not a developer — a folder in ~/projects, save points turned on, a private GitHub repo, and one line telling them how to come back to it. Use when they say they want to start something new, or want to work on a thing that does not exist yet.
 argument-hint: "[what it is for]"
 ---
@@ -92,7 +92,7 @@ they will use it every day.
 
 ## 8. Then, in the new window
 
-    /mwk-save
+    /piy-save
 
 ...when they are finished for now. It writes down what changed and puts it
 somewhere safe. Tell them they can also just say "save my work" — the slash
@@ -100,7 +100,7 @@ command and the sentence do the same thing.
 
 ## If it is a website, do not start from an empty file
 
-Two starter sites ship with the kit, at `~/projects/mwk-genie/site-templates/`:
+Two starter sites ship with the kit, at `~/projects/piy-genie/site-templates/`:
 
 - **`one-page/`** — everything on one scrolling page. Almost every first website is this.
 - **`pages/`** — a small site with a menu, when there is genuinely more than one thing to say.
@@ -111,10 +111,10 @@ minutes and starting with too much is where people stall.
 
 **Then say what the structure is, in about three lines:** plain HTML with one stylesheet,
 no build step and nothing to install, so opening the file in a browser just works. The
-colours and sizes are all named at the top of `mwk.css` — change one there and the whole
+colours and sizes are all named at the top of `piy.css` — change one there and the whole
 site changes. That is the only thing they need to know to start editing it.
 
-`~/projects/mwk-genie/site-templates/README.md` has the longer version if they ask.
+`~/projects/piy-genie/site-templates/README.md` has the longer version if they ask.
 
 ## 9. Then get on with it — over there, not here
 

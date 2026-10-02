@@ -1,9 +1,9 @@
 ---
-name: mwk-onboard
+name: piy-onboard
 description: Connect the three accounts everything else leans on — GitHub, Cloudflare, Replicate — for someone who is not a developer. Walk them through each in their browser, put each key in their store from a second tab, and PROVE each one answers. Re-runnable — it also answers "what is connected?". Use at the end of setup, when they ask to connect or set up an account, or when something says a key is missing.
 ---
 
-<!-- requires: gh mwk curl -->
+<!-- requires: gh piy curl -->
 
 Three accounts, in this order, and **the closing line is measured, not claimed**:
 
@@ -42,15 +42,15 @@ it moves. A token scoped to what they will actually use is right; "everything" i
 Then, in a second tab — say why it is theirs to type, and that the screen shows nothing
 while they paste:
 
-    mwk add CLOUDFLARE_API_TOKEN
+    piy add CLOUDFLARE_API_TOKEN
 
-**If this is their first `mwk add`**, warn them BEFORE they run it: it will make them a key
+**If this is their first `piy add`**, warn them BEFORE they run it: it will make them a key
 of their own and tell them to copy one line into their password manager. That line is the
 only way into their keys, ever. Say it before, not after.
 
 Check — measured 2026-09-17, a good token answers 200 and a wrong one 400:
 
-    mwk run -- sh -c 'curl -s -o /dev/null -w "%{http_code}" \
+    piy run -- sh -c 'curl -s -o /dev/null -w "%{http_code}" \
       -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
       https://api.cloudflare.com/client/v4/user/tokens/verify'
 
@@ -62,24 +62,24 @@ mark it done.
 Same shape. The token is on their Replicate account page (again: point at Replicate's own
 docs for where, not memory).
 
-    mwk add REPLICATE_API_TOKEN
+    piy add REPLICATE_API_TOKEN
 
 Check — measured 2026-09-17, a good token answers 200 and a wrong one 401:
 
-    mwk run -- sh -c 'curl -s -o /dev/null -w "%{http_code}" \
+    piy run -- sh -c 'curl -s -o /dev/null -w "%{http_code}" \
       -H "Authorization: Bearer $REPLICATE_API_TOKEN" \
       https://api.replicate.com/v1/account'
 
 ## 4. Their keys, somewhere other than this laptop
 
 Only once GitHub works, and only if `~/projects/keys` exists — it appears at their first
-`mwk add`, which may not have happened yet. A repo on one disk is not a backup, and what
+`piy add`, which may not have happened yet. A repo on one disk is not a backup, and what
 they read promises them one.
 
 - **Give git their name**, if it has none: `user.name` and `user.email` from `gh api user`,
   using `<id>+<login>@users.noreply.github.com` so their real address is not in every
   commit they ever make. Without an identity git REFUSES to commit on any machine whose
-  hostname has no domain, and `mwk` can only tell them after the fact.
+  hostname has no domain, and `piy` can only tell them after the fact.
 - **If the store has no `origin`, give it one and push:**
   `gh repo create keys --private --source ~/projects/keys --remote origin --push`.
   Then confirm with `gh repo view --json visibility` and say the word back to them. Every
@@ -96,4 +96,4 @@ computer only until it is.
 One line, three names, a tick or a dash each, **from the checks you just ran** — and, if
 step 4 put their store on GitHub, four words saying so. Then one sentence on what the
 first dash would unlock, if there is one, and stop. No summary, no
-next steps — `/mwk-new` is the next thing and they will get there.
+next steps — `/piy-new` is the next thing and they will get there.

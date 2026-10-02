@@ -30,7 +30,7 @@ if [ -d "$DEST/iTerm.app" ] || [ -d "/Applications/iTerm.app" ] || [ -d "$HOME/A
   exit 0
 fi
 
-ZIP="${TMPDIR:-/tmp}/mwk-iterm2.zip"
+ZIP="${TMPDIR:-/tmp}/piy-iterm2.zip"
 printf 'Installing iTerm2 (a nicer terminal — this takes a moment)\n'
 if ! curl -fsSL -o "$ZIP" https://iterm2.com/downloads/stable/latest; then
   printf 'iTerm2 download failed. Not fatal — everything works without it.\n' >&2

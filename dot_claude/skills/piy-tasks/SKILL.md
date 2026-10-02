@@ -1,5 +1,5 @@
 ---
-name: mwk-tasks
+name: piy-tasks
 description: What is open across all their projects, in one list — every GitHub issue on every repo of theirs, and anything one project has asked of another — with a suggested next step for each, decided in one reply. Use when they ask what is outstanding, what they should do next, what is waiting on them, or want to look across everything rather than one folder.
 argument-hint: "[a project name, to look at just that one]"
 ---
@@ -21,7 +21,7 @@ stop; there is nothing to gather.
 For each repo (or just the named one), the open issues:
 `gh issue list -R <owner/name> --state open --limit 50 --json number,title,body,createdAt,comments`.
 
-Also read every `TODO.md` under `~/projects/*/` — those are the notes `/mwk-save`
+Also read every `TODO.md` under `~/projects/*/` — those are the notes `/piy-save`
 leaves, and for someone who works mostly in the chat they are more of the truth
 than the issue list is.
 
@@ -37,7 +37,7 @@ under it is a question they cannot answer.
 
 **Small projects are the point.** Someone with six small folders and this list knows
 more about where they are than someone with one big folder and a memory. When a
-project's `TODO.md` is really three projects, say so — `/mwk-new` is cheap.
+project's `TODO.md` is really three projects, say so — `/piy-new` is cheap.
 
 ## 3. The list
 
@@ -60,7 +60,7 @@ Group by project. Skip any project with nothing open.
 End with the numbered items that need an answer, one line each, and take the
 answers in a single reply. For anything they say yes to: closing an issue is
 `gh issue close <n> -R <owner/name> --comment "<one plain line>"`, and doing a
-small thing is doing it — then `/mwk-save` in that project.
+small thing is doing it — then `/piy-save` in that project.
 
 Never close anything because it is old, and never open new issues from here.
 Things worth tracking go in that project's `TODO.md`.

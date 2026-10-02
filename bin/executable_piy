@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# mwk — three commands. Everything else, the agent does.
+# piy — three commands. Everything else, the agent does.
 #
-#   mwk add NAME                    put a key in the store. YOU type it; it never goes through chat
-#   mwk run -- <command>            run something with your keys in its environment
-#   mwk update                      get the newest version of the kit
+#   piy add NAME                    put a key in the store. YOU type it; it never goes through chat
+#   piy run -- <command>            run something with your keys in its environment
+#   piy update                      get the newest version of the kit
 #
 # THE RULE THIS FILE IS SHAPED BY (mate, 2026-09-17): a command exists only if it is needed
 # OFTEN. `init`, `list`, `needs`, `lock`, `rekey`, `uninstall`, a menu — all gone; the agent on
@@ -32,12 +32,12 @@
 #      a value with a space broke the command it was meant to feed.
 #   3. `read -rs` takes one line; a pasted multi-line secret was truncated and the rest was
 #      handed to the interactive shell — then "Stored. Not in your history." Both false.
-#   4. `mwk run` with the store file missing ran the command with NO keys, exit 0.
+#   4. `piy run` with the store file missing ran the command with NO keys, exit 0.
 #   5. (install.sh) the version regex missed any pin with a trailing comment.
 set -euo pipefail
 
-STORE="${MWK_STORE:-$HOME/projects/keys}"
-KEY="${MWK_KEY:-$HOME/.config/sops/age/keys.txt}"
+STORE="${PIY_STORE:-$HOME/projects/keys}"
+KEY="${PIY_KEY:-$HOME/.config/sops/age/keys.txt}"
 KEYS="$STORE/keys.enc.env"
 
 # Set explicitly, never inherited. A shell that already exports SOPS_AGE_KEY_FILE (this
@@ -47,7 +47,7 @@ KEYS="$STORE/keys.enc.env"
 export SOPS_AGE_KEY_FILE="$KEY"
 unset SOPS_AGE_KEY SOPS_AGE_RECIPIENTS 2>/dev/null || true
 
-# Mate Wish Key red is #e2342b — truecolor where the terminal says it can do it, the
+# Prompt It Yourself red is #e2342b — truecolor where the terminal says it can do it, the
 # nearest xterm-256 red otherwise, and NOTHING when output is not a terminal. A value
 # piped into a file must never arrive wrapped in escape codes.
 if [ -t 1 ]; then
@@ -60,16 +60,16 @@ else
   RED=''; B=''; GRN=''; R=''
 fi
 
-die()  { printf '%smwk:%s %s\n' "$RED" "$R" "$*" >&2; exit 1; }
+die()  { printf '%spiy:%s %s\n' "$RED" "$R" "$*" >&2; exit 1; }
 note() { printf '%s\n' "$*" >&2; }
 good() { printf '%s%s%s\n' "$GRN" "$*" "$R" >&2; }
 
 usage() { cat <<'EOF'
-mwk — your keys, in one place.
+piy — your keys, in one place.
 
-  mwk add NAME                    put a key in. You type it; it never goes through the chat
-  mwk run -- <command>            run something with your keys, just for that command
-  mwk update                      get the newest version of all of this
+  piy add NAME                    put a key in. You type it; it never goes through the chat
+  piy run -- <command>            run something with your keys, just for that command
+  piy update                      get the newest version of all of this
 
 There is no way to print a value, and no --value flag. That is on purpose.
 Anything else — seeing what you have, a new computer, a new key — ask me in the chat.
@@ -87,7 +87,7 @@ have_tty() { [ -t 0 ] && (exec 3<>/dev/tty) 2>/dev/null; }
 require_tty() {
   have_tty && return 0
   cat >&2 <<'EOF'
-mwk: this needs your own terminal, and this isn't one.
+piy: this needs your own terminal, and this isn't one.
 
   Nothing is wrong. Keys are only ever typed where nothing is watching,
   and an AI agent has no keyboard — so it cannot be here for this bit.
@@ -100,13 +100,13 @@ EOF
   exit 3
 }
 
-# Only the two commands that touch the store need sops. `mwk` alone and `mwk update` must
+# Only the two commands that touch the store need sops. `piy` alone and `piy update` must
 # work with NOTHING else on PATH — update is what you run when things are broken, and a
-# login shell (`su - user -c`, a cron, a fresh tab before ~/.mwk-shell.sh) has ~/bin but not
+# login shell (`su - user -c`, a cron, a fresh tab before ~/.piy-shell.sh) has ~/bin but not
 # mise's shims. The container rehearsal caught this: a preflight here made usage exit 1.
 need_tools() {
   for t in sops age-keygen; do
-    command -v "$t" >/dev/null 2>&1 || die "$t is not on PATH — open a new terminal tab, or run 'mwk update'"
+    command -v "$t" >/dev/null 2>&1 || die "$t is not on PATH — open a new terminal tab, or run 'piy update'"
   done
 }
 
@@ -120,7 +120,7 @@ have_git() {
 }
 
 # `--config` rather than trusting the search: sops looks for .sops.yaml upward from the
-# CURRENT DIRECTORY, and `mwk add` is run from wherever they are standing, not the store.
+# CURRENT DIRECTORY, and `piy add` is run from wherever they are standing, not the store.
 # `--filename-override` because the input is stdin, and the creation rule matches on the
 # file's NAME — without it there is "no matching creation rules found" (measured), which
 # is the no-catch-all rule doing its job on the wrong file.
@@ -133,13 +133,13 @@ have_git() {
 #   * `git init` ran only on the first add (see ensure_store).
 #
 # The identity is set on the STORE REPO ONLY, never globally. Their own git config is
-# theirs; /mwk-onboard sets that from their GitHub account.
+# theirs; /piy-onboard sets that from their GitHub account.
 store_git() {
   have_git || return 1
   [ -d "$STORE/.git" ] || git -C "$STORE" init -q >/dev/null 2>&1 || return 1
   if [ -z "$(git -C "$STORE" config user.email 2>/dev/null)" ]; then
-    git -C "$STORE" config user.email "mwk@localhost" >/dev/null 2>&1 || true
-    git -C "$STORE" config user.name  "mwk"           >/dev/null 2>&1 || true
+    git -C "$STORE" config user.email "piy@localhost" >/dev/null 2>&1 || true
+    git -C "$STORE" config user.name  "piy"           >/dev/null 2>&1 || true
   fi
   return 0
 }
@@ -156,7 +156,7 @@ store_save() {
     if git -C "$STORE" commit -qm "add $1" >/dev/null 2>&1; then
       backup="in the history here, on this computer only. Ask me to put your keys on GitHub"
     else
-      note "mwk: the value is saved, but it did not go into the history in $STORE. Ask me to look."
+      note "piy: the value is saved, but it did not go into the history in $STORE. Ask me to look."
       return 0
     fi
   else
@@ -198,7 +198,7 @@ ensure_store() {
   # that bogus key into .sops.yaml, wedging every later add with no diagnostic.
   if [ ! -s "$KEY" ] && { [ -f "$STORE/.sops.yaml" ] || [ -f "$KEYS" ]; }; then
     cat >&2 <<EOF
-mwk: your keys are here ($STORE) but the key that opens them is not.
+piy: your keys are here ($STORE) but the key that opens them is not.
 
   It is the AGE-SECRET-KEY line you saved in your password manager. Put it in a file at
     $KEY
@@ -242,7 +242,7 @@ EOF
 
   Open a NEW tab in your terminal and type:   cat $KEY
   Copy the line that starts AGE-SECRET-KEY into your password manager, as a
-  new entry called "mwk key". Then type 'clear' so it is not in your scroll-back.
+  new entry called "piy key". Then type 'clear' so it is not in your scroll-back.
 
   Never paste that line into the chat. The agent does not need it and must not have it.
 
@@ -258,7 +258,7 @@ cmd_add() {
   require_tty      # first: "this needs your keyboard" is the answer that hands it to a person
   need_tools       # then: at a person's terminal, a missing sops is a PATH problem, said plainly
   name="${1:-}"
-  [ -n "$name" ] && [ $# -eq 1 ] || die "usage: mwk add NAME"
+  [ -n "$name" ] && [ $# -eq 1 ] || die "usage: piy add NAME"
   printf '%s' "$name" | grep -qE '^[A-Za-z_][A-Za-z_0-9]*$' || die "a name must look like OPENAI_API_KEY"
   f="$KEYS"
   ensure_store
@@ -343,14 +343,14 @@ cmd_add() {
 cmd_run() {
   need_tools
   [ "${1:-}" = "--" ] && shift
-  [ $# -gt 0 ] || die "usage: mwk run -- <command>"
-  [ -s "$KEY" ] || die "no key at $KEY — add a key first (mwk add NAME), or put your saved key there"
+  [ $# -gt 0 ] || die "usage: piy run -- <command>"
+  [ -s "$KEY" ] || die "no key at $KEY — add a key first (piy add NAME), or put your saved key there"
   # The STORE FILE too. `sops_d` treats a missing file as empty (which `add` relies on for
   # the very first key), so without this line a missing store ran the command with no keys
   # at all, exit 0, and nothing said so — reproduced by the review.
-  [ -f "$KEYS" ] || die "nothing is stored yet at $KEYS — add a key first (mwk add NAME)"
+  [ -f "$KEYS" ] || die "nothing is stored yet at $KEYS — add a key first (piy add NAME)"
   # A template, because BSD mktemp (macOS) wants one; GNU accepts it too.
-  tmp="$(mktemp "${TMPDIR:-/tmp}/mwk.XXXXXX")"; chmod 600 "$tmp"; trap 'rm -f "$tmp"' EXIT
+  tmp="$(mktemp "${TMPDIR:-/tmp}/piy.XXXXXX")"; chmod 600 "$tmp"; trap 'rm -f "$tmp"' EXIT
   { sops_d "$KEYS" || die "could not read your keys"; } > "$tmp"
   # NEVER `. "$tmp"`. sops writes KEY=value with no quoting, and sourcing that made a value
   # containing a backtick RUN as code and a value with a space break the command it was
@@ -374,8 +374,12 @@ cmd_run() {
 # It runs the installer that is ON DISK, so a change to install.sh itself lands on the
 # run AFTER the one that pulled it. That is ordinary self-update lag and it is fine.
 cmd_update() {
-  u="$HOME/projects/mwk-genie/install.sh"
-  [ -f "$u" ] || die "the kit is not at ~/projects/mwk-genie, so there is nothing to update"
+  u="$HOME/projects/piy-genie/install.sh"
+  # A machine set up before 2026-10-02 still has the kit at its old name, and this is the
+  # run that moves it (install.sh step 1). Look there too, or the first update after the
+  # rename would say there is nothing to update.
+  [ -f "$u" ] || u="$HOME/projects/mwk-genie/install.sh"
+  [ -f "$u" ] || die "the kit is not at ~/projects/piy-genie, so there is nothing to update"
   note "Updating. This takes a minute or two, and it will not ask you for anything."
   exec sh "$u" "$@"
 }

@@ -1,9 +1,9 @@
 #!/bin/sh
 # Take it all back off, so it can go straight back on.
 #
-#   sh ~/projects/mwk-genie/uninstall.sh          ask about anything that is theirs
-#   sh ~/projects/mwk-genie/uninstall.sh --all    take everything, still confirming once
-#   sh ~/projects/mwk-genie/uninstall.sh --dry-run   say what would go, touch nothing
+#   sh ~/projects/piy-genie/uninstall.sh          ask about anything that is theirs
+#   sh ~/projects/piy-genie/uninstall.sh --all    take everything, still confirming once
+#   sh ~/projects/piy-genie/uninstall.sh --dry-run   say what would go, touch nothing
 #
 # WHY THIS EXISTS: the kit is meant to be installed on a stranger's machine, and anything
 # you can put on someone's computer you should be able to take off it. It is also the only
@@ -26,7 +26,7 @@ for a in "$@"; do
 done
 
 # ── colour ────────────────────────────────────────────────────────────────────────────
-# Mate Wish Key red is #e2342b. Truecolor where the terminal says it can, the nearest
+# Prompt It Yourself red is #e2342b. Truecolor where the terminal says it can, the nearest
 # xterm-256 red otherwise, and nothing at all when the output is not a terminal — a log
 # full of escape codes helps nobody.
 if [ -t 1 ]; then
@@ -76,30 +76,30 @@ ask() {
   case "$a" in y|Y|yes|YES) return 0 ;; *) return 1 ;; esac
 }
 
-printf '\n%s%sTaking Mate Wish Key back off this computer%s\n' "$B" "$RED" "$R"
+printf '\n%s%sTaking Prompt It Yourself back off this computer%s\n' "$B" "$RED" "$R"
 [ "$DRY" = 1 ] && say "${DIM}Dry run — nothing will be touched.$R"
 say "${DIM}Anything of yours goes to the trash, not the bin. You can put it back.$R"
 
 head_ "The parts that are just plumbing"
 for rc in "$HOME/.zshrc" "$HOME/.bashrc"; do
   [ -f "$rc" ] || continue
-  grep -q 'mwk-shell.sh' "$rc" 2>/dev/null || continue
+  grep -q 'piy-shell.sh' "$rc" 2>/dev/null || continue
   if [ "$DRY" = 1 ]; then item "would unhook" "$rc"; else
     # `grep -v` exits 1 when NOTHING is left — an rc file whose only line was the hook —
     # and `&& mv` then skipped the write while the screen said "unhooked". And `mv` over
     # the rc replaced a symlinked ~/.bashrc with a regular file. Write back with `cat >`
     # (keeps the symlink and the inode), and accept exit 1 as "empty now", not failure.
-    tmp="$rc.mwk.$$"; rc_grep=0
-    grep -v 'mwk-shell.sh' "$rc" > "$tmp" || rc_grep=$?
+    tmp="$rc.piy.$$"; rc_grep=0
+    grep -v 'piy-shell.sh' "$rc" > "$tmp" || rc_grep=$?
     if [ "$rc_grep" -le 1 ]; then
       cat "$tmp" > "$rc"; rm -f "$tmp"; item "unhooked" "$rc"
     else
-      rm -f "$tmp"; item "could NOT unhook — take the mwk-genie line out by hand" "$rc"
+      rm -f "$tmp"; item "could NOT unhook — take the piy-genie line out by hand" "$rc"
     fi
   fi
 done
-wipe "$HOME/.mwk-shell.sh"
-wipe "$HOME/bin/mwk"
+wipe "$HOME/.piy-shell.sh"
+wipe "$HOME/bin/piy"
 wipe "$HOME/.claude/statusline.sh"
 # ...and take the POINTER to it out of their settings, or Claude Code keeps running a
 # status line command that no longer exists. Removing the file while leaving the setting
@@ -111,18 +111,18 @@ if [ -f "$SET" ] && grep -q 'claude/statusline.sh' "$SET" 2>/dev/null; then
   if [ "$DRY" = 1 ]; then item "would unset" "statusLine in $SET"
   elif command -v jq >/dev/null 2>&1 \
        && jq 'if (.statusLine.command // "") | test("claude/statusline.sh") then del(.statusLine) else . end' \
-            "$SET" > "$SET.mwk.$$" 2>/dev/null && [ -s "$SET.mwk.$$" ]; then
-    cat "$SET.mwk.$$" > "$SET"; rm -f "$SET.mwk.$$"; item "unset" "statusLine in $SET"
+            "$SET" > "$SET.piy.$$" 2>/dev/null && [ -s "$SET.piy.$$" ]; then
+    cat "$SET.piy.$$" > "$SET"; rm -f "$SET.piy.$$"; item "unset" "statusLine in $SET"
   else
-    rm -f "$SET.mwk.$$"
+    rm -f "$SET.piy.$$"
     item "could NOT unset — take the statusLine line out by hand" "$SET"
   fi
 fi
-# The server over ~/mwk-work is ours to stop; the folder and everything in it is theirs.
+# The server over ~/piy-work is ours to stop; the folder and everything in it is theirs.
 # Matched by PORT, not by name: `pkill -x miniserve` killed every miniserve on the machine,
 # including one the agent had started for them on another port minutes earlier.
 pkill -f 'miniserve .*-p 29200' 2>/dev/null && item "stopped" "the page on 127.0.0.1:29200" || true
-for s in "$HOME"/.claude/skills/mwk-*; do [ -e "$s" ] && wipe "$s"; done
+for s in "$HOME"/.claude/skills/piy-*; do [ -e "$s" ] && wipe "$s"; done
 wipe "$HOME/.config/chezmoi"
 wipe "$HOME/.local/share/chezmoi"
 
@@ -159,12 +159,13 @@ if [ -d "$HOME/.local/share/mise" ]; then
 fi
 
 head_ "The kit itself"
-trash_it "$HOME/projects/mwk-genie"
+trash_it "$HOME/projects/piy-genie"
+trash_it "$HOME/projects/mwk-genie"   # its name before 2026-10-02, if no update has moved it yet
 
 printf '\n%s%sDone.%s\n' "$B" "$GRN" "$R"
 say "${DIM}Claude Code itself was left alone — you are still signed in.$R"
 say "${DIM}It still works without asking before each command, because that is a setting in$R"
 say "${DIM}~/.claude/settings.json and it is yours now. Ask it to turn the asking back on.$R"
-say "${DIM}Open a NEW terminal window: 'mwk' should be gone from it. 'claude' is still yours.$R"
+say "${DIM}Open a NEW terminal window: 'piy' should be gone from it. 'claude' is still yours.$R"
 say "${DIM}Anything moved to the trash is in $TRASH$R"
 printf '\n'

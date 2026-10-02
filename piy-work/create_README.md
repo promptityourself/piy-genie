@@ -2,7 +2,7 @@
 
 **This is your page — bookmark it.** Underneath this text is every page your genie writes for
 you, one folder per project, newest at the bottom of each. The words you are reading are a
-file, `~/mwk-work/README.md`, and it is yours: if anything here is wrong, tell the genie and it
+file, `~/piy-work/README.md`, and it is yours: if anything here is wrong, tell the genie and it
 fixes the file.
 
 ## Starting it
@@ -47,7 +47,7 @@ claude
 
 ## Finding your folders in a normal window
 
-Two folders are yours: `~/projects` (your projects) and `~/mwk-work` (the pages behind this
+Two folders are yours: `~/projects` (your projects) and `~/piy-work` (the pages behind this
 one). Ask the genie to **put a shortcut to each on your Desktop** — once — and you never need
 the terminal to reach them again.
 
@@ -74,21 +74,21 @@ You can type these, or just say them in normal words. Both work.
 
 | say | or type | what happens |
 |---|---|---|
-| "I wish my computer could…" | `/mwk-wish` | it finds what already does that, writes you one page of options, and builds the first version today |
-| "connect my accounts" | `/mwk-onboard` | GitHub, Cloudflare and Replicate — set up, keys stored, each one proved to answer |
-| "start me a new project" | `/mwk-new` | a folder with the shape above, saving turned on, a private copy on GitHub |
-| "save my work" | `/mwk-save` | says what changed, writes the note for next time, saves, pushes, tidies up |
-| "what did I learn today" | `/mwk-learn` | adds today to `~/projects/learning` — your running record |
-| "how are we doing" | `/mwk-review` | steps back and says whether this has wandered off, or got too complicated |
-| "what's outstanding" | `/mwk-tasks` | everything open across all your projects, with a suggested next step each |
-| "report this bug" | `/mwk-bug` | writes a report about the genie itself, shows you, files it only if you say yes |
+| "I wish my computer could…" | `/piy-wish` | it finds what already does that, writes you one page of options, and builds the first version today |
+| "connect my accounts" | `/piy-onboard` | GitHub, Cloudflare and Replicate — set up, keys stored, each one proved to answer |
+| "start me a new project" | `/piy-new` | a folder with the shape above, saving turned on, a private copy on GitHub |
+| "save my work" | `/piy-save` | says what changed, writes the note for next time, saves, pushes, tidies up |
+| "what did I learn today" | `/piy-learn` | adds today to `~/projects/learning` — your running record |
+| "how are we doing" | `/piy-review` | steps back and says whether this has wandered off, or got too complicated |
+| "what's outstanding" | `/piy-tasks` | everything open across all your projects, with a suggested next step each |
+| "report this bug" | `/piy-bug` | writes a report about the genie itself, shows you, files it only if you say yes |
 
 ## The pages under this one
 
 When the genie has something longer than a screen to tell you — a plan, a choice between
 options, a comparison, a report — it writes a page rather than filling the chat, and gives you
 the link. They all land here, under the project they belong to, under the day they were
-written. They are files in `~/mwk-work`, saved and pushed like your projects, so they are still
+written. They are files in `~/piy-work`, saved and pushed like your projects, so they are still
 here in a year.
 
 ## Your keys
@@ -97,19 +97,19 @@ An API key — the password a service gives you so a program can use it — neve
 file and never goes in the chat. In a **second** terminal tab:
 
 ```
-mwk add OPENAI_API_KEY
+piy add OPENAI_API_KEY
 ```
 
 It asks you to paste the value and shows nothing while you do. Because nothing appears,
 people press Enter to check — that is fine, it does not break anything.
 
-The key is stored encrypted in `~/projects/keys`, and `mwk run -- <something>` hands it to
+The key is stored encrypted in `~/projects/keys`, and `piy run -- <something>` hands it to
 that one program for that one run. After it saves, it tells you in one line where the copy
 went: on this computer only, or to your private repo on GitHub as well. If it says this
 computer only, say *"put my keys on GitHub"* and it is done in a minute.
 
 **The first time you do this it makes you a key of your own** and tells you to copy one
-line — it starts `AGE-SECRET-KEY` — into your password manager, as an entry called **mwk
+line — it starts `AGE-SECRET-KEY` — into your password manager, as an entry called **piy
 key**. **Do that, once.** It is the only way into your keys, on this computer and on the next
 one, and nobody can make it again.
 
@@ -177,8 +177,8 @@ rule to my CLAUDE.md that…"* and it does it for you.
 
 ## Where this came from
 
-[Mate Wish Key](https://matewishkey.com) — a show about sitting down with a complete
+[Prompt It Yourself](https://promptityourself.com) — a show about sitting down with a complete
 stranger for a few hours and building the thing they wished their computer did. Everything
 you just set up is the box; the point is doing it together. Want to come on
-[the show](https://matewishkey.com/show/)? You do not need to be any good at this — that is
+[the show](https://promptityourself.com/show/)? You do not need to be any good at this — that is
 the whole premise.

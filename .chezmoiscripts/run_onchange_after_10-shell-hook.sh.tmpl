@@ -1,17 +1,17 @@
 #!/bin/sh
-# Ensure ~/.zshrc and ~/.bashrc each source ~/.mwk-shell.sh — exactly once.
+# Ensure ~/.zshrc and ~/.bashrc each source ~/.piy-shell.sh — exactly once.
 #
 # run_onchange_ re-runs only when this script's rendered content changes, but the check
 # below is what actually makes it safe: it greps first and appends only if absent. Run it
 # a hundred times and the count stays 1. That is the property v1 could not assert.
 #
-# hash of the shell file so this re-runs when it changes: {{ include "dot_mwk-shell.sh.tmpl" | sha256sum }}
+# hash of the shell file so this re-runs when it changes: {{ include "dot_piy-shell.sh.tmpl" | sha256sum }}
 set -eu
-LINE='[ -f "$HOME/.mwk-shell.sh" ] && . "$HOME/.mwk-shell.sh"   # mwk-genie'
+LINE='[ -f "$HOME/.piy-shell.sh" ] && . "$HOME/.piy-shell.sh"   # piy-genie'
 for rc in "$HOME/.zshrc" "$HOME/.bashrc"; do
   [ -e "$rc" ] || touch "$rc"
-  if ! grep -qF '.mwk-shell.sh' "$rc"; then
+  if ! grep -qF '.piy-shell.sh' "$rc"; then
     printf '\n%s\n' "$LINE" >> "$rc"
-    printf 'mwk-genie: linked %s\n' "$rc"
+    printf 'piy-genie: linked %s\n' "$rc"
   fi
 done

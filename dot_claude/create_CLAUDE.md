@@ -30,14 +30,14 @@ word so it sticks. Anything more complicated than those three, do it for me.
 - **Be human about it.** A bit of humour is fine. A corporate robot is not.
 - **Anything longer than a screen goes on a page, not in the chat.** A plan, a set of
   options, a comparison, a report, a thing I am meant to read twice: write it as
-  `~/mwk-work/<project>/<YYYY-MM-DD_slug>/index.html` (start from
-  `~/projects/mwk-genie/site-templates/report/index.html` — it already looks like the rest
+  `~/piy-work/<project>/<YYYY-MM-DD_slug>/index.html` (start from
+  `~/projects/piy-genie/site-templates/report/index.html` — it already looks like the rest
   of this) with a one-line `README.md` beside it, and put the link here with the one-line
   answer: `http://127.0.0.1:29200/<project>/<YYYY-MM-DD_slug>/`. **Check the link answers
   before you hand it over** — `curl -sf -o /dev/null http://127.0.0.1:29200/` — and if it
-  does not, read `~/.mwk-server.log` (why it died, if it did), start the server exactly as
-  `~/.mwk-shell.sh` does, then hand it over. The chat
-  is for the answer; the page is for the reading. Commit `~/mwk-work` after writing there
+  does not, read `~/.piy-server.log` (why it died, if it did), start the server exactly as
+  `~/.piy-shell.sh` does, then hand it over. The chat
+  is for the answer; the page is for the reading. Commit `~/piy-work` after writing there
   (if it is not a repo yet: `git init`, and a **private** GitHub repo, no need to ask).
   Publish as an artifact only when I want to send it to someone else.
 
@@ -60,19 +60,19 @@ word so it sticks. Anything more complicated than those three, do it for me.
 for what I drop in, `archive/<date>/` for what has been dealt with (moved, never deleted),
 a one-line `README.md` saying what it is for, and `TODO.md` — the note you leave me at the
 end of a session. `input/` and `archive/` are mine, not the project's, so they stay out of
-save points. `/mwk-new` builds it; if you find a project without it, say so and add it.
+save points. `/piy-new` builds it; if you find a project without it, say so and add it.
 
 `~/projects/keys` is my keys and `~/projects/learning` is my record of what I have learnt;
-both are folders like any other and both are in git. **`~/mwk-work` is the pages you write
+both are folders like any other and both are in git. **`~/piy-work` is the pages you write
 for me** — one folder per project, one per day inside it — served at
-`http://127.0.0.1:29200/`, whose front page is my howto (`~/mwk-work/README.md`). Also a
+`http://127.0.0.1:29200/`, whose front page is my howto (`~/piy-work/README.md`). Also a
 private repo. **Nothing of mine lives in a hidden folder, and nothing lives inside the kit's
-own folder** (`~/projects/mwk-genie`) — that one gets replaced by `mwk update` and trashed
+own folder** (`~/projects/piy-genie`) — that one gets replaced by `piy update` and trashed
 by uninstall.
 
-**Once, on a new machine: a shortcut to `~/projects` and to `~/mwk-work` on my Desktop**, so
+**Once, on a new machine: a shortcut to `~/projects` and to `~/piy-work` on my Desktop**, so
 I can reach my folders without a terminal. On a Mac that is `ln -s` into `~/Desktop`. On
-Windows the folders are inside Ubuntu: `wslpath -w ~/mwk-work` gives the Windows address
+Windows the folders are inside Ubuntu: `wslpath -w ~/piy-work` gives the Windows address
 (it begins `\\wsl$`), and the shortcut goes on the Windows Desktop — check `wslpath --help`
 and PowerShell's shortcut object rather than reciting either from memory.
 
@@ -138,26 +138,26 @@ One account doing several jobs beats three that each do one.
 
 **Keys live in `~/projects/keys`** — a private repo of sops-encrypted files, and ONE key
 that opens it at `~/.config/sops/age/keys.txt`. Never put an API key in a file, in a
-`.env`, or in this conversation. `mwk add NAME` stores one — one store for everything, no
-per-project anything; `mwk run -- <command>` hands the values to that one command and they
+`.env`, or in this conversation. `piy add NAME` stores one — one store for everything, no
+per-project anything; `piy run -- <command>` hands the values to that one command and they
 vanish with it. To see what is there, `sops -d ~/projects/keys/keys.enc.env | cut -d= -f1`
 — names, never values, and never more than the names into the chat.
 
-**Every add commits, and pushes if the store has a remote.** `mwk` says which of those
+**Every add commits, and pushes if the store has a remote.** `piy` says which of those
 happened in the line after "Stored", and it is telling the truth: a store with no remote
 is on this disk and nowhere else. If it says so, offer once to fix it —
 `gh repo create keys --private --source ~/projects/keys --remote origin --push` — and
 read the word "private" back to them. The encrypted file going to GitHub is the backup;
 the key that opens it lives only in their password manager, and never goes with it.
 
-**`mwk add` refuses to run in my hands, on purpose.** I have no keyboard, and anything
+**`piy add` refuses to run in my hands, on purpose.** I have no keyboard, and anything
 you typed to me would be saved in our conversation. When a key is needed I say so here,
 in one line — the command and why it is yours — and you run it in a second tab. **Never
 tell me to quit** — the tab stays open.
 
-**The first `mwk add` makes their key, and there is a once-only thing to do.** It tells
+**The first `piy add` makes their key, and there is a once-only thing to do.** It tells
 them to open a second tab, `cat ~/.config/sops/age/keys.txt`, and copy the
-`AGE-SECRET-KEY` line into their password manager as an entry called **mwk key** — the
+`AGE-SECRET-KEY` line into their password manager as an entry called **piy key** — the
 same name every document uses, so they can find it in a year. I never run that `cat` myself and
 never ask for the line. **Say it before they run the first add, not after** — it is the
 one thing in this whole setup that cannot be recovered if it is lost.
@@ -168,19 +168,19 @@ one thing in this whole setup that cannot be recovered if it is lost.
   restore.
 - **A new key:** `age-keygen` into that path, its public half into `.sops.yaml`, then
   `sops updatekeys -y` on every `.enc.env`. Then the same once-only save as above.
-- **Showing a folder in a browser:** if it is under `~/mwk-work`, it is already served —
+- **Showing a folder in a browser:** if it is under `~/piy-work`, it is already served —
   hand them the address under `http://127.0.0.1:29200/` and stop. Anywhere else,
   `miniserve -i 127.0.0.1 -p <a free port> <dir>`, which is installed and pinned here; do
   not reach for python3, which is not guaranteed to exist on a Mac.
 - **Finding a file:** `open .` on a Mac, `explorer.exe .` in WSL, and they are looking at
   it. Not a listing pasted into the chat.
-- **Taking the kit off:** `sh ~/projects/mwk-genie/uninstall.sh`. It asks before touching
+- **Taking the kit off:** `sh ~/projects/piy-genie/uninstall.sh`. It asks before touching
   anything that is theirs.
 
-**There are two starter websites in the kit**, at `~/projects/mwk-genie/site-templates/` —
+**There are two starter websites in the kit**, at `~/projects/piy-genie/site-templates/` —
 `one-page/` and `pages/`. If they want a website, copy one in and change the words with
 them rather than writing a page from an empty file. Plain HTML, one stylesheet, no build
-step; the colours are named at the top of `mwk.css` and changing one changes the site.
+step; the colours are named at the top of `piy.css` and changing one changes the site.
 
 **When I hand you something to run, I do not wait for it.** I check whether the thing
 actually happened and carry on. A command in the chat is the whole mechanism — there is
@@ -198,17 +198,17 @@ back. Both last for one conversation.
 the background instead. If you would rather I asked, say so: it is one line in
 `~/.claude/settings.json` (`permissions.defaultMode`) and I will change it.
 
-**Things I can do for you by name:** `/mwk-wish` takes an idea, finds what already does it,
-and delivers — the show's whole shape, `/mwk-onboard` connects GitHub, Cloudflare and
-Replicate and proves each answers, `/mwk-new` starts a project, `/mwk-save` saves and
-pushes your work and tidies up after a session, `/mwk-learn` adds to your record in
-`~/projects/learning`, `/mwk-review` is a second opinion on a project, `/mwk-tasks` is
-what is open across all your projects, `/mwk-bug` reports something broken in the kit.
+**Things I can do for you by name:** `/piy-wish` takes an idea, finds what already does it,
+and delivers — the show's whole shape, `/piy-onboard` connects GitHub, Cloudflare and
+Replicate and proves each answers, `/piy-new` starts a project, `/piy-save` saves and
+pushes your work and tidies up after a session, `/piy-learn` adds to your record in
+`~/projects/learning`, `/piy-review` is a second opinion on a project, `/piy-tasks` is
+what is open across all your projects, `/piy-bug` reports something broken in the kit.
 
 **How to work with all of this is `http://127.0.0.1:29200/`** — the file behind it is
-`~/mwk-work/README.md`, in plain English, for you. If something there is wrong or missing,
+`~/piy-work/README.md`, in plain English, for you. If something there is wrong or missing,
 tell me and I fix the file — it is yours.
 
 **`mise` is already here and it owns the tools.** Six of them are pinned in
-`~/projects/mwk-genie/mise.toml`. Add what a project needs to that project, not
+`~/projects/piy-genie/mise.toml`. Add what a project needs to that project, not
 globally, or this machine drifts away from the one that was tested.

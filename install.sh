@@ -15,11 +15,11 @@ set -eu
 REPO="https://github.com/promptityourself/piy-genie"
 # Which branch to install. Defaults to main; the rehearsal sets it to test a branch for real
 # rather than pre-placing the kit, which would be the test arranging its own precondition.
-REF="${MWK_REF:-main}"
-KIT="$HOME/projects/mwk-genie"
+REF="${PIY_REF:-main}"
+KIT="$HOME/projects/piy-genie"
 BIN="$HOME/.local/bin"
 
-# Mate Wish Key red is #e2342b. Truecolor when the terminal says it can, the nearest
+# Prompt It Yourself red is #e2342b. Truecolor when the terminal says it can, the nearest
 # xterm-256 red otherwise, and nothing at all when this is piped somewhere — the first
 # thing a person sees should not be a screenful of escape codes.
 if [ -t 1 ]; then
@@ -54,6 +54,15 @@ esac
 
 say "1/6  Getting the kit"
 mkdir -p "$HOME/projects"
+# Until 2026-10-02 the kit lived at ~/projects/mwk-genie. A machine from then reaches here
+# through `piy update`, which runs THIS file from the old folder: moving it is safe, because
+# sh already has the script open. Only when the new name is free, and the remote is
+# repointed so the next pull does not lean on GitHub's redirect from the old name.
+OLD_KIT="$HOME/projects/mwk-genie"
+if [ ! -e "$KIT" ] && [ -d "$OLD_KIT" ] && [ ! -L "$OLD_KIT" ]; then
+  mv "$OLD_KIT" "$KIT"; step "moved ~/projects/mwk-genie to ~/projects/piy-genie"
+  if [ -d "$KIT/.git" ] && have_git; then git -C "$KIT" remote set-url origin "$REPO.git" 2>/dev/null || true; fi
+fi
 if [ -d "$KIT/.git" ] && have_git; then
   # ⚠ THIS USED TO BE `git pull ... || true`, AND THAT IS THE BUG THIS REPO KEEPS HAVING.
   # A kit with a local edit, or a branch that has diverged, makes --ff-only fail. The
@@ -77,7 +86,7 @@ else
   # directory is absent. A kit that arrived as a tarball (a Mac whose Command Line Tools
   # were not ready, the container) is a directory with no .git. Once git appeared, the old
   # `elif have_git` sent it to `git clone` into a non-empty directory: fatal, exit 128,
-  # under `set -eu`, at step 1 of 6. `mwk update` is `exec` of this script, so the one
+  # under `set -eu`, at step 1 of 6. `piy update` is `exec` of this script, so the one
   # command written for when things are broken was the one thing that could not run.
   # Untarring over the existing directory just replaces the files. Reproduced 2026-09-18.
   # A Mac with no developer tools has a /usr/bin/git that only offers to install Xcode.
@@ -109,11 +118,11 @@ step "from $KIT/mise.toml — same versions on every machine"
 # saw it. Order fixes it; the honest banner at the end is what surfaced it.
 #
 # mise shims resolve a tool from the config in scope. mise.toml is a PROJECT config, so
-# `sops` and `age` are in scope inside ~/projects/mwk-genie and nowhere else — and `mwk`
+# `sops` and `age` are in scope inside ~/projects/piy-genie and nowhere else — and `piy`
 # is run from wherever the person happens to be standing. `mise use -g` writes the same
 # pinned versions into their global config, additively, so the shims resolve anywhere.
 say "4/6  Making those tools available everywhere"
-step "so mwk works wherever you are standing, not just inside the kit"
+step "so piy works wherever you are standing, not just inside the kit"
 for t in $(grep -oE '^"aqua:[^"]+"' "$KIT/mise.toml" | tr -d '"'); do
   # The version is the quoted thing after `=`, NOT the last quoted thing on the line: a
   # trailing `# comment` after the pin made the old `$`-anchored regex return nothing for
@@ -155,7 +164,7 @@ if [ ! -t 1 ]; then
   # beginner-angle review, 2026-09-18. `[ -t 1 ]` is the same test the colours use.
   printf '   Done. You are reading this from a tool, not a terminal, so do NOT tell them
 '
-  printf '   to close anything. Run  . ~/.mwk-shell.sh  in this session to pick up the
+  printf '   to close anything. Run  . ~/.piy-shell.sh  in this session to pick up the
 '
   printf '   new tools, then carry on. A window THEY open later gets it on its own.
 '

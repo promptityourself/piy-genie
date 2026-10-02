@@ -42,42 +42,42 @@ deliberately testing something unmerged.
       installer.
 - [ ] **`install.sh` runs to the end** with nothing typed. Note anything that looked like a hang.
 - [ ] **`git --version` answers afterwards.** Nothing installs git on Linux; the Ubuntu WSL image
-      is assumed to ship it. If it does not, `/mwk-new` cannot work — that is a finding.
+      is assumed to ship it. If it does not, `/piy-new` cannot work — that is a finding.
 - [ ] **The bar at the bottom shows model · folder · % full** after the first reply.
 - [ ] **`http://127.0.0.1:29200/` opens in the Windows browser** and shows *How to work with your
       genie*. Documented (WSL2 localhost forwarding is on by default), never measured on the
       fleet. If it does not open, try `http://localhost:29200/` and note which worked.
-- [ ] **A new Ubuntu tab knows `mwk`** and `mwk` alone prints three commands.
-- [ ] **`/mwk-onboard`:** the GitHub device code is read out slowly; the first `mwk add` is
-      preceded by the key warning; `mwk add` refuses inside Claude and works in the second tab;
+- [ ] **A new Ubuntu tab knows `piy`** and `piy` alone prints three commands.
+- [ ] **`/piy-onboard`:** the GitHub device code is read out slowly; the first `piy add` is
+      preceded by the key warning; `piy add` refuses inside Claude and works in the second tab;
       the second tab is Ubuntu (see above); `cat ~/.config/sops/age/keys.txt` shows one
       `AGE-SECRET-KEY` line and you can copy it; the Cloudflare and Replicate checks print
       `200`; the closing line has ticks that came from those calls.
-- [ ] **Desktop shortcuts.** The agent puts a shortcut to `~/projects` and `~/mwk-work` on the
+- [ ] **Desktop shortcuts.** The agent puts a shortcut to `~/projects` and `~/piy-work` on the
       Windows Desktop via the `\\wsl$` address. Double-click each: Explorer opens on the Linux
       folder. `wslpath -w` is the documented tool for the address; nobody here has run it.
 - [ ] **`explorer.exe .`** from a project folder opens the right place.
-- [ ] **`/mwk-new`** makes `README.md`, `input/`, `archive/`, `.gitignore`, a private repo,
+- [ ] **`/piy-new`** makes `README.md`, `input/`, `archive/`, `.gitignore`, a private repo,
       and moves you into it with `cd …` + `claude` — and it waits for you to say the new
       window started.
 - [ ] **A page.** Ask for something longer than a screen (a plan, a comparison). It lands under
-      `~/mwk-work/<project>/<date_slug>/`, the link opens in the Windows browser, it looks like
-      the rest of the kit, and `~/mwk-work` got a commit.
-- [ ] **`/mwk-save`** says what changed in plain English, writes `TODO.md`, pushes, and prints
+      `~/piy-work/<project>/<date_slug>/`, the link opens in the Windows browser, it looks like
+      the rest of the kit, and `~/piy-work` got a commit.
+- [ ] **`/piy-save`** says what changed in plain English, writes `TODO.md`, pushes, and prints
       `cd …` / `claude` / `/clear` with the `/clear` explanation.
-- [ ] **`/mwk-learn`** writes `~/projects/learning/README.md`, entry at the top, and does NOT
-      touch `~/mwk-work/README.md`.
+- [ ] **`/piy-learn`** writes `~/projects/learning/README.md`, entry at the top, and does NOT
+      touch `~/piy-work/README.md`.
 - [ ] **`/clear` and `/model sonnet`** do what the howto says; the bar changes model name.
 - [ ] **Turn the asking back on** by saying so; confirm `permissions.defaultMode` changed in
       `~/.claude/settings.json` and the next session asks.
-- [ ] **`/mwk-bug`** shows the report before filing and redacts the home path. **Answer no** —
+- [ ] **`/piy-bug`** shows the report before filing and redacts the home path. **Answer no** —
       do not file a real issue from a test.
 
 ## Then the automated pass on the same machine
 
 ```
 curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/<sha>/test/on-this-machine.sh \
-  | MWK_REF=<sha> sh
+  | PIY_REF=<sha> sh
 ```
 
 It installs, checks, uninstalls and reinstalls — the machine is left set up. Its last block
@@ -97,7 +97,7 @@ lists what it could not test; those are the boxes above.
 
 ## Only worth doing before a release
 
-- [ ] **The live site still matches.** Open `matewishkey.com/topics/put-the-genie-in-the-box/`
+- [ ] **The live site still matches.** Open `promptityourself.com/topics/put-the-genie-in-the-box/`
       and check it says what `HOW-TO.md` says — and if it shows the two prompt boxes, that they
       are the ones in `prompts/`. It shows both as of 2026-09-19, byte-for-byte the first fence
       of each prompt file (`CLAUDE.md` → *The cross-repo coupling*). What to look for now is a

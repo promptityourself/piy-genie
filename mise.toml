@@ -10,7 +10,7 @@
 #   ubi:     DEPRECATED. mise says so on use: "Use the github backend instead …
 #            This will be removed in mise 2027.1.0." Do not build on it.
 #   github:  extracts the whole archive (so age-keygen comes along, which ubi dropped —
-#            and `mwk add` needs it), but exposes whatever the asset is NAMED. sops
+#            and `piy add` needs it), but exposes whatever the asset is NAMED. sops
 #            ships a bare `sops-v3.13.3.linux.amd64`, so no `sops` command appears.
 #   aqua:    the curated registry knows each project's naming, so the commands land as
 #            `sops`, `age`, `age-keygen`. It also verifies SLSA provenance
@@ -33,15 +33,15 @@
 "aqua:twpayne/chezmoi"     = "2.72.0"   # applies this repo to their home directory
 "aqua:getsops/sops"        = "3.13.3"   # the store's encryption
 "aqua:FiloSottile/age"     = "1.3.1"    # …and its key. Brings age-keygen
-# The folder server for ~/mwk-work on :29200 — the pages the agent writes for them, README
+# The folder server for ~/piy-work on :29200 — the pages the agent writes for them, README
 # rendered at every folder. Back as of 2026-09-17 (it left with the v2 dashboard): a generic
 # file server over a folder is work.l for one person, and reading what the agent writes is
-# a frequent need. Started by ~/.mwk-shell.sh, loopback only, symlinks off.
+# a frequent need. Started by ~/.piy-shell.sh, loopback only, symlinks off.
 "aqua:svenstaro/miniserve" = "0.35.0"
 # jq merges ~/.claude/settings.json rather than replacing it. NOT python3: a stock Mac has
 # none without Command Line Tools, which v2 deliberately stopped installing.
 "aqua:jqlang/jq"           = "1.8.2"
-# gh, because /mwk-save pushes their work and /mwk-bug files a report — both were written
+# gh, because /piy-save pushes their work and /piy-bug files a report — both were written
 # assuming it, and nothing installed it. A project they cannot push is not saved.
 "aqua:cli/cli"             = "2.98.0"
 

@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: How to work with your genie
-    url: https://matewishkey.com/topics/put-the-genie-in-the-box/
+    url: https://promptityourself.com/topics/put-the-genie-in-the-box/
     about: The two prompts, what each setup step does, and the bits that commonly go wrong.
   - name: Not a bug in this kit?
     url: https://github.com/anthropics/claude-code/issues

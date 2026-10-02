@@ -1,5 +1,5 @@
 ---
-name: mwk-review
+name: piy-review
 description: Step back and look at this project with fresh eyes — work out what it is actually trying to do, then say where it has drifted away from that, and offer to tidy it up. Summoned on demand. Use when they ask for a review, a second opinion, a check-up, or say something feels off and they cannot say why.
 ---
 
@@ -63,5 +63,5 @@ Say which of the three you can do right now and roughly what would change. Then
 wait. **Do not start fixing while you are still describing** — they asked you to
 look, not to rearrange.
 
-If they say yes, fix them, then run `/mwk-save` so the tidy-up is a save
+If they say yes, fix them, then run `/piy-save` so the tidy-up is a save
 point of its own and not tangled up with their actual work.

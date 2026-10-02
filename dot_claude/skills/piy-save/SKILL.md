@@ -1,5 +1,5 @@
 ---
-name: mwk-save
+name: piy-save
 description: Wrap up a session for someone who is not a developer — say in plain English what changed, leave a note for next time, tidy anything that has gone stale, make a save point, push it to GitHub, and close off anything on the project's list that is provably done. Use when they say they are finished, done for now, want to save or back up, or want to close something off.
 ---
 
@@ -18,7 +18,7 @@ commit message — nothing else changes.
 
 **Never commit a key.** Keys belong in `~/projects/keys`, not in a file. If you find
 one in what is about to be saved, stop, take it out, and tell them in one line to
-put it in the store from a second tab: `mwk add THE_NAME`, and why. `input/` and
+put it in the store from a second tab: `piy add THE_NAME`, and why. `input/` and
 `archive/` are theirs, not the project's — they should already be in `.gitignore`,
 and if they are not, add them before the push rather than after.
 
@@ -27,7 +27,7 @@ and if they are not, add them before the push rather than after.
 Read the actual changes, not just the file names, so you can describe them in their
 words. **If nothing has changed**, say so and stop — an empty save point is noise.
 **If this folder is not set up for save points**, say so plainly and offer to set it
-up now; `/mwk-new` is what does that.
+up now; `/piy-new` is what does that.
 
 Two or three lines, in plain English: what the work does now that it did not before.
 Not a list of files. Not a diff. They want to know it landed.

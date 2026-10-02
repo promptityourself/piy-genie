@@ -9,14 +9,14 @@ And the third one, which is different in kind:
 
 ```
 curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/<sha>/test/on-this-machine.sh \
-  | MWK_REF=<sha> sh
+  | PIY_REF=<sha> sh
 ```
 
 ⚠ **`on-this-machine.sh` installs on the machine you run it on.** Nothing is mocked, and it
 finishes by uninstalling and reinstalling — so the machine is left set up, not clean. It is the
 only way to test the Mac path, since the other two are Linux and a Linux container.
 
-**Pass a SHA rather than a branch to any of them.** `MWK_REF` defaults to `main`. That used
+**Pass a SHA rather than a branch to any of them.** `PIY_REF` defaults to `main`. That used
 to 404 outright, because `install.sh` did not exist there until v2 merged; it has been a 200
 since 2026-09-17 and `check.sh` curls it now. The reason to pass a SHA is the next paragraph,
 which is the one that actually bites.

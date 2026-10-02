@@ -1,5 +1,5 @@
 ---
-name: mwk-learn
+name: piy-learn
 description: Add today to their running record of what they have learnt, across every project, from their own conversations — what they now know how to do, what went wrong and what fixed it, and the handful of things worth remembering. One file that grows, in ~/projects/learning, saved and pushed like everything else. Use when they ask what they learnt, want a summary of the day, or want something to keep.
 ---
 
@@ -56,7 +56,7 @@ not one. If the folder does not exist yet, make it, `git init`, and create the f
 with a one-line title and today as the only entry.
 
 This file is the log only. The *howto* — how all of this works — is a different
-file, `~/mwk-work/README.md`, and it is not yours to write here.
+file, `~/piy-work/README.md`, and it is not yours to write here.
 
 Each entry is a `## <date>` heading with these sections, in this order, dropping
 any that would be empty:

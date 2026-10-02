@@ -13,14 +13,26 @@
 # while looking correct.
 *
 !.claude
-!.claude/**
-!.mwk-shell.sh
+!.piy-shell.sh
 !bin
-!bin/mwk
+!bin/piy
 !.chezmoiscripts
 !.chezmoiscripts/**
-# The howto, placed ONCE (create_) as the root README of ~/mwk-work — so it renders at
+# The howto, placed ONCE (create_) as the root README of ~/piy-work — so it renders at
 # http://127.0.0.1:29200/ — and never overwritten: ours on day one, theirs after. Nothing
-# else under ~/mwk-work, and nothing under ~/projects, is chezmoi's to see.
-!mwk-work
-!mwk-work/README.md
+# else under ~/piy-work, and nothing under ~/projects, is chezmoi's to see.
+!piy-work
+!piy-work/README.md
+
+# The names from before 2026-10-02, ignored BY NAME. `*` above matches top-level names only
+# (measured with `chezmoi managed`, 2026-10-02): `bin/mwk` and `.claude/skills/mwk-save` are
+# not matched by it, so the allow-list does not cover anything nested. That matters here
+# because a kit that arrived as a tarball is updated by untarring over itself, which deletes
+# nothing — the old sources stay on disk, and without these lines the apply right after
+# the retire script removed bin/mwk and the mwk-* skills would place them all again.
+# There used to be a `!.claude/**` above; it went with this, because a `!` beats an ignore
+# (measured) and it was un-ignoring the old skills. `*` never matched under .claude anyway.
+bin/mwk
+.claude/skills/mwk-*
+.mwk-shell.sh
+mwk-work

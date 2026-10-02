@@ -28,7 +28,7 @@ docker run --rm ubuntu:24.04 bash -euc "
   apt-get update -qq >/dev/null && apt-get install -y -qq curl ca-certificates zsh python3 >/dev/null
   useradd -m -s /bin/bash guest
 
-  su - guest -c 'curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/$REF/install.sh | MWK_REF=$REF sh' \
+  su - guest -c 'curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/$REF/install.sh | PIY_REF=$REF sh' \
     || { echo 'INSTALL FAILED'; exit 1; }
 
   echo; echo '===== ASSERTIONS ====='
@@ -36,7 +36,7 @@ docker run --rm ubuntu:24.04 bash -euc "
   ok(){ printf '  %-54s %s\n' \"\$1\" \"\$2\"; }
   chk(){ if su - guest -c \"\$2\" >/dev/null 2>&1; then ok \"\$1\" PASS; else ok \"\$1\" FAIL; FAILED=1; fi; }
 
-  chk 'kit is at ~/projects/mwk-genie'          'test -f ~/projects/mwk-genie/mise.toml'
+  chk 'kit is at ~/projects/piy-genie'          'test -f ~/projects/piy-genie/mise.toml'
   chk 'mise installed'                          'test -x ~/.local/bin/mise'
   # Claude Code itself. Never asserted before 2026-09-17 — and it had never installed in
   # this container: a jq shim with no global version killed its installer, in /dev/null.
@@ -50,23 +50,23 @@ docker run --rm ubuntu:24.04 bash -euc "
   # quote in a comment ENDS IT — the rest becomes arguments to docker, the truncated script
   # runs to its end, exit 0. That happened here on 2026-09-17: two assertions, ALL GREEN
   # absent, exit 0. The REHEARSAL-COMPLETE sentinel below is what catches it now.
-  chk 'sops RUNS (through the shim, from the kit dir)'      '. ~/.mwk-shell.sh; cd ~/projects/mwk-genie && sops --version'
-  chk 'age AND age-keygen RUN'                  '. ~/.mwk-shell.sh; cd ~/projects/mwk-genie && age --version && age-keygen --version'
-  chk 'miniserve RUNS'                          '. ~/.mwk-shell.sh; cd ~/projects/mwk-genie && miniserve --version'
-  chk 'chezmoi RUNS'                            '. ~/.mwk-shell.sh; cd ~/projects/mwk-genie && chezmoi --version'
-  chk 'jq RUNS (settings merge)'                '. ~/.mwk-shell.sh; cd ~/projects/mwk-genie && jq --version'
-  chk 'gh RUNS (/mwk-save, /mwk-bug, /mwk-tasks)' '. ~/.mwk-shell.sh; cd ~/projects/mwk-genie && gh --version'
-  chk '~/.mwk-shell.sh placed'                  'test -f ~/.mwk-shell.sh'
+  chk 'sops RUNS (through the shim, from the kit dir)'      '. ~/.piy-shell.sh; cd ~/projects/piy-genie && sops --version'
+  chk 'age AND age-keygen RUN'                  '. ~/.piy-shell.sh; cd ~/projects/piy-genie && age --version && age-keygen --version'
+  chk 'miniserve RUNS'                          '. ~/.piy-shell.sh; cd ~/projects/piy-genie && miniserve --version'
+  chk 'chezmoi RUNS'                            '. ~/.piy-shell.sh; cd ~/projects/piy-genie && chezmoi --version'
+  chk 'jq RUNS (settings merge)'                '. ~/.piy-shell.sh; cd ~/projects/piy-genie && jq --version'
+  chk 'gh RUNS (/piy-save, /piy-bug, /piy-tasks)' '. ~/.piy-shell.sh; cd ~/projects/piy-genie && gh --version'
+  chk '~/.piy-shell.sh placed'                  'test -f ~/.piy-shell.sh'
   chk '~/.claude/CLAUDE.md placed'              'test -f ~/.claude/CLAUDE.md'
   chk '~/.claude/settings.json placed'          'test -f ~/.claude/settings.json'
   chk 'settings.json says opus'                 'grep -q opus ~/.claude/settings.json'
   chk 'settings.json says auto mode'            'grep -q \"\\\"defaultMode\\\": *\\\"auto\\\"\" ~/.claude/settings.json'
   chk 'settings.json wires the status bar'      'grep -q statusline.sh ~/.claude/settings.json'
   chk '~/.claude/statusline.sh placed + runs'   'printf \"{}\" | sh ~/.claude/statusline.sh | grep -q \"% full\"'
-  chk 'skills placed'                           'test -f ~/.claude/skills/mwk-save/SKILL.md'
-  chk 'the howto placed at ~/mwk-work/README.md' 'grep -q \"How to work with your genie\" ~/mwk-work/README.md'
+  chk 'skills placed'                           'test -f ~/.claude/skills/piy-save/SKILL.md'
+  chk 'the howto placed at ~/piy-work/README.md' 'grep -q \"How to work with your genie\" ~/piy-work/README.md'
   echo '  --- their page: started by the first interactive shell, loopback only ---'
-  # bash -ic reads .bashrc → ~/.mwk-shell.sh → the start block. That IS the mechanism, so
+  # bash -ic reads .bashrc → ~/.piy-shell.sh → the start block. That IS the mechanism, so
   # it is what gets exercised, not a hand-started server.
   su - guest -c 'bash -ic true >/dev/null 2>&1; sleep 2' || true
   chk 'miniserve is running after one interactive shell' 'pgrep -x miniserve'
@@ -75,14 +75,14 @@ docker run --rm ubuntu:24.04 bash -euc "
   chk '…and its front page is the howto'        'curl -sf -m 5 http://127.0.0.1:29200/ | grep -q \"How to work with your genie\"'
   chk '…and it is NOT on the network'           '! curl -sf -m 4 http://\$(hostname -I | cut -d\" \" -f1):29200/ -o /dev/null'
 
-  # Existing is not the same as usable. v2 shipped a green 'test -x ~/bin/mwk' for a day
+  # Existing is not the same as usable. v2 shipped a green 'test -x ~/bin/piy' for a day
   # while ~/bin was on nobody's PATH and the first command a person is told to run did not
   # exist. Ask whether it RUNS.
-  chk 'mwk RUNS in a fresh interactive shell'   'bash -ic \"command -v mwk\"'
+  chk 'piy RUNS in a fresh interactive shell'   'bash -ic \"command -v piy\"'
   chk 'no ccc alias anywhere (it is gone)'      '! bash -ic \"alias ccc\" 2>/dev/null'
-  chk 'mwk with no args + no tty prints usage'  'mwk </dev/null | grep -q \"mwk add\"'
-  chk 'mwk add refuses with no keyboard (exit 3)' 'mwk add X </dev/null >/dev/null 2>&1; [ \$? = 3 ]'
-  chk 'mwk update is offered'                   'mwk </dev/null | grep -q \"mwk update\"'
+  chk 'piy with no args + no tty prints usage'  'piy </dev/null | grep -q \"piy add\"'
+  chk 'piy add refuses with no keyboard (exit 3)' 'piy add X </dev/null >/dev/null 2>&1; [ \$? = 3 ]'
+  chk 'piy update is offered'                   'piy </dev/null | grep -q \"piy update\"'
   # The pins must reach the GLOBAL mise config as versions. A regex bug had three of six
   # tools land there as \"latest\" — the exact thing mise.toml says the pins exist to prevent.
   chk 'no tool is \"latest\" in the global mise config' '! grep -q latest ~/.config/mise/config.toml'
@@ -90,8 +90,8 @@ docker run --rm ubuntu:24.04 bash -euc "
   # The update path is install.sh re-run. It has to be safe on a machine that already has
   # everything — which is the ONLY state it is ever used in, and the state the old
   # \`git pull ... || true\` reported success from without doing anything.
-  chk 'mwk update re-runs clean over a full install' '. ~/.mwk-shell.sh; mwk update </dev/null'
-  chk '...and the kit still works afterwards'   'bash -ic \"command -v mwk\"'
+  chk 'piy update re-runs clean over a full install' '. ~/.piy-shell.sh; piy update </dev/null'
+  chk '...and the kit still works afterwards'   'bash -ic \"command -v piy\"'
 
   echo '  --- the bug that shipped live in v1 ---'
   # ⚠ grep -c EXITS 1 WHEN THE COUNT IS ZERO. The old fallback here was \`|| echo 0\`, which
@@ -99,11 +99,11 @@ docker run --rm ubuntu:24.04 bash -euc "
   # \`0\\n0\` — never equal to 0 or to 1. On this suite's first ever run that turned a
   # perfectly correct uninstall into a red line. Let grep's own count stand, and default
   # only when the file is genuinely absent, which is the case that prints nothing at all.
-  n=\$(su - guest -c 'grep -c mwk-shell.sh ~/.bashrc 2>/dev/null || true'); n=\${n:-0}
+  n=\$(su - guest -c 'grep -c piy-shell.sh ~/.bashrc 2>/dev/null || true'); n=\${n:-0}
   ok 'source line in ~/.bashrc appears exactly once' \"\$([ \"\$n\" = 1 ] && echo PASS || echo \"FAIL (n=\$n)\")\"
   [ \"\$n\" = 1 ] || FAILED=1
-  su - guest -c '. ~/.mwk-shell.sh; chezmoi apply --source ~/projects/mwk-genie' >/dev/null 2>&1 || true
-  n2=\$(su - guest -c 'grep -c mwk-shell.sh ~/.bashrc 2>/dev/null || true'); n2=\${n2:-0}
+  su - guest -c '. ~/.piy-shell.sh; chezmoi apply --source ~/projects/piy-genie' >/dev/null 2>&1 || true
+  n2=\$(su - guest -c 'grep -c piy-shell.sh ~/.bashrc 2>/dev/null || true'); n2=\${n2:-0}
   ok 'still exactly once after a second apply' \"\$([ \"\$n2\" = 1 ] && echo PASS || echo \"FAIL (n=\$n2)\")\"
   [ \"\$n2\" = 1 ] || FAILED=1
 
@@ -123,27 +123,27 @@ p=os.path.expanduser(\"~/.claude/settings.json\")
 d=json.load(open(p)); d[\"enabledPlugins\"]={\"someone/thing\":True}; json.dump(d,open(p,\"w\"))
 PY'
   chk 'the fixture itself was planted (precondition)' 'grep -q someone/thing ~/.claude/settings.json'
-  su - guest -c '. ~/.mwk-shell.sh; chezmoi apply --source ~/projects/mwk-genie' >/dev/null 2>&1 || true
+  su - guest -c '. ~/.piy-shell.sh; chezmoi apply --source ~/projects/piy-genie' >/dev/null 2>&1 || true
   chk 'a key Claude Code wrote survives an apply'  'grep -q someone/thing ~/.claude/settings.json'
   chk 'and ours is still asserted'                 'grep -q opus ~/.claude/settings.json'
   echo '  --- the howto is theirs after day one ---'
   # create_ = write once. Their edit to the top of the file must survive an apply; a managed
   # file would put our copy back and silently delete what they changed.
-  su - guest -c 'printf \"\\nTHEIR EDIT SURVIVES\\n\" >> ~/mwk-work/README.md'
-  su - guest -c '. ~/.mwk-shell.sh; chezmoi apply --source ~/projects/mwk-genie' >/dev/null 2>&1 || true
-  chk 'their edit to the howto survives an apply' 'grep -q \"THEIR EDIT SURVIVES\" ~/mwk-work/README.md'
+  su - guest -c 'printf \"\\nTHEIR EDIT SURVIVES\\n\" >> ~/piy-work/README.md'
+  su - guest -c '. ~/.piy-shell.sh; chezmoi apply --source ~/projects/piy-genie' >/dev/null 2>&1 || true
+  chk 'their edit to the howto survives an apply' 'grep -q \"THEIR EDIT SURVIVES\" ~/piy-work/README.md'
 
   echo '  --- take it all off, then put it back on ---'
   # This is the cycle the kit has to survive, because it is the one used to test it. A
   # second install onto a machine that still has the first is not what a new person meets.
   su - guest -c 'mkdir -p ~/.config/sops/age && echo AGE-SECRET-KEY-1FAKE > ~/.config/sops/age/keys.txt'
-  su - guest -c 'sh ~/projects/mwk-genie/uninstall.sh --all' >/dev/null 2>&1 || { echo '  UNINSTALL FAILED'; FAILED=1; }
+  su - guest -c 'sh ~/projects/piy-genie/uninstall.sh --all' >/dev/null 2>&1 || { echo '  UNINSTALL FAILED'; FAILED=1; }
 
-  for leftover in .mwk-shell.sh bin/mwk .claude/skills/mwk-save projects/mwk-genie .config/chezmoi; do
+  for leftover in .piy-shell.sh bin/piy .claude/skills/piy-save projects/piy-genie .config/chezmoi; do
     if su - guest -c \"test -e ~/\$leftover\" 2>/dev/null; then ok \"gone: ~/\$leftover\" FAIL; FAILED=1
     else ok \"gone: ~/\$leftover\" PASS; fi
   done
-  n3=\$(su - guest -c 'grep -c mwk-shell.sh ~/.bashrc 2>/dev/null || true'); n3=\${n3:-0}
+  n3=\$(su - guest -c 'grep -c piy-shell.sh ~/.bashrc 2>/dev/null || true'); n3=\${n3:-0}
   ok 'the source line is out of ~/.bashrc' \"\$([ \"\$n3\" = 0 ] && echo PASS || echo \"FAIL (n=\$n3)\")\"
   [ \"\$n3\" = 0 ] || FAILED=1
   chk 'the status bar script is gone'           '! test -f ~/.claude/statusline.sh'
@@ -151,16 +151,42 @@ PY'
   chk 'the server is stopped'                   '! pgrep -x miniserve'
   # If that failed, SAY WHAT IS RUNNING — a red line with no process table is a guess.
   pgrep -x miniserve >/dev/null 2>&1 && ps -eo pid,ppid,user,stat,lstart,args | grep '[m]iniserve' | sed 's/^/      still running: /'
-  chk '…but ~/mwk-work and the howto are NOT touched' 'test -f ~/mwk-work/README.md'
+  chk '…but ~/piy-work and the howto are NOT touched' 'test -f ~/piy-work/README.md'
 
   # Their keys were moved, not erased. Deleting a password store on a typo would be the
   # worst thing this kit could do, so the trash is load-bearing rather than politeness.
   chk 'the key is in the trash, not erased'     'ls ~/.local/share/Trash/files/keys.txt'
 
-  su - guest -c 'curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/$REF/install.sh | MWK_REF=$REF sh' >/dev/null 2>&1 \
+  su - guest -c 'curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/$REF/install.sh | PIY_REF=$REF sh' >/dev/null 2>&1 \
     || { echo '  REINSTALL FAILED'; FAILED=1; }
-  chk 'reinstall: mwk runs again'               'bash -ic \"command -v mwk\"'
+  chk 'reinstall: piy runs again'               'bash -ic \"command -v piy\"'
   chk 'reinstall: settings say auto again'      'grep -q \"\\\"defaultMode\\\": *\\\"auto\\\"\" ~/.claude/settings.json'
+
+  echo '  --- a machine set up before the rename (mwk, at 9c62ddd) comes across ---'
+  # The real path an existing machine takes: the OLD mwk update runs the OLD install.sh from
+  # disk, which fetches whatever MWK_REF names, so the new kit arrives under the old names
+  # and the retire script has to carry it over. Then piy update moves the kit folder itself.
+  # The guest above may have a server on 29200 from its own shells; this is a test harness
+  # running as root, so clear the port first or the page check would ask the wrong server.
+  pkill -x miniserve 2>/dev/null || true; sleep 1
+  useradd -m -s /bin/bash veteran
+  chkv(){ if su - veteran -c \"\$2\" >/dev/null 2>&1; then ok \"\$1\" PASS; else ok \"\$1\" FAIL; FAILED=1; fi; }
+  su - veteran -c 'curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/9c62ddd/install.sh | MWK_REF=9c62ddd sh' >/dev/null 2>&1 \
+    || { echo '  OLD INSTALL FAILED'; FAILED=1; }
+  chkv 'precondition: the old kit is in place and mwk runs' 'bash -ic \"command -v mwk\" && test -f ~/mwk-work/README.md'
+  su - veteran -c 'mkdir -p ~/mwk-work/proj && echo THEIR-PAGE > ~/mwk-work/proj/index.html'
+  su - veteran -c '. ~/.mwk-shell.sh; MWK_REF=$REF mwk update </dev/null' >/dev/null 2>&1 || { echo '  MWK UPDATE TO THE NEW KIT FAILED'; FAILED=1; }
+  chkv 'after mwk update: piy runs in a fresh shell'  'bash -ic \"command -v piy\"'
+  chkv '…and mwk is gone from it'                      '! bash -ic \"command -v mwk\"'
+  chkv 'their page MOVED to ~/piy-work'               'grep -q THEIR-PAGE ~/piy-work/proj/index.html && ! test -e ~/mwk-work'
+  chkv 'the skills are piy-*, and no mwk-* is left'   'test -f ~/.claude/skills/piy-save/SKILL.md && ! ls -d ~/.claude/skills/mwk-*'
+  chkv 'their agent rules say piy add, never mwk'     'grep -q \"piy add\" ~/.claude/CLAUDE.md && ! grep -q mwk ~/.claude/CLAUDE.md'
+  chkv 'the howto says piy, never mwk'                '! grep -q mwk ~/piy-work/README.md'
+  chkv '.bashrc sources the new shell file, once'     '[ \$(grep -c piy-shell.sh ~/.bashrc) = 1 ] && ! grep -q mwk-shell ~/.bashrc'
+  chkv 'their page answers on 29200 from ~/piy-work'  'bash -ic true >/dev/null 2>&1; sleep 2; curl -sf -m 5 http://127.0.0.1:29200/proj/index.html | grep -q THEIR-PAGE'
+  su - veteran -c '. ~/.piy-shell.sh; PIY_REF=$REF piy update </dev/null' >/dev/null 2>&1 || { echo '  PIY UPDATE FAILED'; FAILED=1; }
+  chkv 'piy update moved the kit to ~/projects/piy-genie' 'test -f ~/projects/piy-genie/install.sh && ! test -e ~/projects/mwk-genie'
+  chkv '…and piy still runs after it'                 'bash -ic piy </dev/null | grep -q \"piy add\"'
 
   echo REHEARSAL-COMPLETE
   echo; [ \"\$FAILED\" = 0 ] && echo 'ALL GREEN' || { echo 'SOME FAILED'; exit 1; }

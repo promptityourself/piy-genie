@@ -29,14 +29,14 @@ for dead in SETUP.md templates/ccc.sh templates/prompt.sh templates/howto.html \
          | grep -vE ':[0-9]+:[[:space:]]*(#|//|<!--|\*)' | wc -l)
   is "nothing references $dead" "$hits" "0"
 done
-stale=$(grep -rn --exclude-dir=.git '/mwk-genie:' dot_claude/ prompts/ README.md 2>/dev/null | wc -l)
-is "no /mwk-genie: command names survive" "$stale" "0"
+stale=$(grep -rn --exclude-dir=.git '/piy-genie:' dot_claude/ prompts/ README.md 2>/dev/null | wc -l)
+is "no /piy-genie: command names survive" "$stale" "0"
 # The commands that were cut on 2026-09-17. A doc still telling someone to type one of
 # these is a beginner's first "command not found" — count live mentions in what ships.
-for gone in 'mwk init' 'mwk list' 'mwk needs' 'mwk lock' 'mwk rekey' 'mwk site' 'mwk serve' \
-            'mwk port' 'mwk queue' 'mwk files' 'mwk uninstall' 'mwk-debug'; do
+for gone in 'piy init' 'piy list' 'piy needs' 'piy lock' 'piy rekey' 'piy site' 'piy serve' \
+            'piy port' 'piy queue' 'piy files' 'piy uninstall' 'mwk-debug'; do
   hits=$(grep -rn --exclude-dir=.git -F "$gone" README.md HOW-TO.md prompts/ dot_claude/ site-templates/ \
-                  bin/ install.sh uninstall.sh dot_mwk-shell.sh.tmpl 2>/dev/null \
+                  bin/ install.sh uninstall.sh dot_piy-shell.sh.tmpl 2>/dev/null \
          | grep -vE ':[0-9]+:[[:space:]]*#' | wc -l)
   is "nothing still offers '$gone'" "$hits" "0"
 done
@@ -87,19 +87,19 @@ grep -qE "→ $ntools pinned tools" CLAUDE.md && ok "CLAUDE.md's one-pass says '
   || no "CLAUDE.md's one-pass says '$ntools pinned tools'" "it says something else"
 
 head_ "The shell file, both shells — and no ccc anywhere"
-rendered=$(chezmoi execute-template --source . < dot_mwk-shell.sh.tmpl 2>/dev/null)
+rendered=$(chezmoi execute-template --source . < dot_piy-shell.sh.tmpl 2>/dev/null)
 [ -n "$rendered" ] && ok "the shell file renders" || no "the shell file renders" "empty"
 # ccc is gone (2026-09-17): how Claude asks is permissions.defaultMode in settings, one
 # home. An alias would be a second home, and two homes is how v1 got two definitions.
 is "no ccc alias in the shell file" "$(printf '%s\n' "$rendered" | grep -c '^alias ccc')" "0"
-ccc_docs=$(grep -rn --exclude-dir=.git -w 'ccc' README.md HOW-TO.md prompts/ dot_claude/ site-templates/ mwk-work/ .github/ install.sh uninstall.sh 2>/dev/null \
+ccc_docs=$(grep -rn --exclude-dir=.git -w 'ccc' README.md HOW-TO.md prompts/ dot_claude/ site-templates/ piy-work/ .github/ install.sh uninstall.sh 2>/dev/null \
            | grep -vE ':[0-9]+:[[:space:]]*#' | wc -l)
 is "no document still tells them to type ccc" "$ccc_docs" "0"
 
-head_ "Their page — the server over ~/mwk-work"
+head_ "Their page — the server over ~/piy-work"
 serve=$(printf '%s\n' "$rendered" | grep -E '^\s*\( nohup miniserve ' )
 [ -n "$serve" ] && ok "the shell file starts miniserve" || no "the shell file starts miniserve" "no start line — the bookmark answers nothing"
-for flag in '-i 127.0.0.1' '-p 29200' ' -P ' '--readme' '"$HOME/mwk-work"'; do
+for flag in '-i 127.0.0.1' '-p 29200' ' -P ' '--readme' '"$HOME/piy-work"'; do
   printf '%s' "$serve" | grep -qF -- "$flag" && ok "…with $flag" \
     || no "…with $flag" "miniserve binds 0.0.0.0 and follows symlinks by default"
 done
@@ -143,40 +143,40 @@ for sh in bash zsh; do
   fi
 done
 for d in '$HOME/.local/bin' '$HOME/bin' 'mise/shims'; do
-  case "$rendered" in *"$d"*) ok "PATH includes $d";; *) no "PATH includes $d" "missing — mwk or claude will be command not found";; esac
+  case "$rendered" in *"$d"*) ok "PATH includes $d";; *) no "PATH includes $d" "missing — piy or claude will be command not found";; esac
 done
 
-head_ "mwk — three commands, and the boundaries that are load-bearing"
-bash -n bin/executable_mwk && ok "mwk is valid bash" || no "mwk is valid bash" "syntax error"
-cmds=$(sed -n '/^case "\${1:-}" in/,/^esac/p' bin/executable_mwk | grep -oE '^  [a-z]+\)' | tr -d ' )' | tr '\n' ' ')
+head_ "piy — three commands, and the boundaries that are load-bearing"
+bash -n bin/executable_piy && ok "piy is valid bash" || no "piy is valid bash" "syntax error"
+cmds=$(sed -n '/^case "\${1:-}" in/,/^esac/p' bin/executable_piy | grep -oE '^  [a-z]+\)' | tr -d ' )' | tr '\n' ' ')
 is "the dispatcher has exactly add, run, update" "$cmds" "add run update "
-usage_n=$(bash bin/executable_mwk </dev/null 2>/dev/null | grep -c '^  mwk ')
+usage_n=$(bash bin/executable_piy </dev/null 2>/dev/null | grep -c '^  piy ')
 is "…and usage lists exactly those three" "$usage_n" "3"
-n=$(grep -c 'require_tty' bin/executable_mwk)
+n=$(grep -c 'require_tty' bin/executable_piy)
 [ "$n" -ge 2 ] && ok "add is behind require_tty ($n uses)" || no "add is behind require_tty" "only $n uses"
 # The help text names the flag in order to say it does not exist. Look at the arg parser.
-v=$(grep -cE '^\s+(--value|-v)\)' bin/executable_mwk)
+v=$(grep -cE '^\s+(--value|-v)\)' bin/executable_piy)
 is "there is no --value flag (argv, ps and history)" "$v" "0"
-grep -q '^export SOPS_AGE_KEY_FILE="\$KEY"' bin/executable_mwk \
+grep -q '^export SOPS_AGE_KEY_FILE="\$KEY"' bin/executable_piy \
   && ok "the key path is set explicitly, never inherited" \
   || no "the key path is set explicitly" "an ambient SOPS_AGE_KEY_FILE would point every decrypt at someone else's key"
-grep -q -- '--config "\$STORE/.sops.yaml"' bin/executable_mwk \
+grep -q -- '--config "\$STORE/.sops.yaml"' bin/executable_piy \
   && ok "encryption names its .sops.yaml (sops searches from cwd, and cwd is the project)" \
   || no "encryption names its .sops.yaml" "run from inside a project, sops would find no rules"
-grep -q -- '--filename-override "\$1"' bin/executable_mwk \
+grep -q -- '--filename-override "\$1"' bin/executable_piy \
   && ok "…and overrides the filename, so the no-catch-all rule matches stdin" \
   || no "encryption overrides the filename" "stdin matches no rule and the write fails"
-grep -q 'but the key that opens them is not' bin/executable_mwk \
+grep -q 'but the key that opens them is not' bin/executable_piy \
   && ok "a store with no key refuses to mint a new one (the new-computer case)" \
   || no "a store with no key refuses to mint a new one" "a fresh key would lock them out of their own repo, silently"
-grep -q 'age-keygen -y "\$KEY"' bin/executable_mwk && ok "the public key is DERIVED (age-keygen -y), not grepped" \
+grep -q 'age-keygen -y "\$KEY"' bin/executable_piy && ok "the public key is DERIVED (age-keygen -y), not grepped" \
   || no "the public key is derived" "a one-line key file has nothing to grep, and pipefail kills the script silently"
-grep -vE '^\s*#' bin/executable_mwk | grep -qE '^\s*\. "\$tmp"|set -a; \. ' \
-  && no "mwk run never sources the dotenv" "a value with a backtick would run as code" \
-  || ok "mwk run never sources the dotenv (comments excluded — the history line names the old bug)"
-grep -q 'mktemp "\${TMPDIR:-/tmp}/mwk.XXXXXX"' bin/executable_mwk && ok "mktemp has a template (BSD mktemp needs one)" \
+grep -vE '^\s*#' bin/executable_piy | grep -qE '^\s*\. "\$tmp"|set -a; \. ' \
+  && no "piy run never sources the dotenv" "a value with a backtick would run as code" \
+  || ok "piy run never sources the dotenv (comments excluded — the history line names the old bug)"
+grep -q 'mktemp "\${TMPDIR:-/tmp}/piy.XXXXXX"' bin/executable_piy && ok "mktemp has a template (BSD mktemp needs one)" \
   || no "mktemp has a template" "bare mktemp is a usage error on macOS, and set -e makes it fatal"
-grep -q 'xcode-select -p' bin/executable_mwk && ok "git is tested the macOS way before git init (xcode-select -p)" \
+grep -q 'xcode-select -p' bin/executable_piy && ok "git is tested the macOS way before git init (xcode-select -p)" \
   || no "git is tested the macOS way" "command -v git is true with no dev tools — the store would never become a repo"
 
 head_ "install.sh — the pins actually reach the global config"
@@ -195,12 +195,12 @@ grep -q "grep -oE '\[0-9\]\[^\"\]\*' || true" install.sh \
   && ok "…and the guard can actually run (the substitution cannot abort first)" \
   || no "the unreadable-pin guard is reachable" "set -eu kills the script before the if, so the message is dead code"
 # A settings.json whose permissions is not an object must not abort the whole apply —
-# chezmoi stops, and mwk update is a chezmoi apply.
+# chezmoi stops, and piy update is a chezmoi apply.
 out=$(printf '{"permissions":"auto","enabledPlugins":{"p":true}}' | sh dot_claude/modify_settings.json 2>/dev/null); rc=$?
 if [ "$rc" = 0 ] && printf '%s' "$out" | grep -q enabledPlugins; then
   ok "a malformed permissions value does not break the merge"
 else
-  no "a malformed permissions value does not break the merge" "jq exited $rc — chezmoi aborts and mwk update dies with it"
+  no "a malformed permissions value does not break the merge" "jq exited $rc — chezmoi aborts and piy update dies with it"
 fi
 grep -qE '^(el)?if have claude; then' install.sh && ok "the closing banner checks claude actually installed" \
   || no "the banner checks claude installed" "a failed install would still say 'type claude'"
@@ -216,9 +216,9 @@ grep -q 'rc_grep' uninstall.sh && grep -q 'cat "\$tmp" > "\$rc"' uninstall.sh \
   || no "unhook handles the only-line case" "grep -v exits 1 on an empty result and && mv skipped the write while saying unhooked"
 
 head_ "The server start is defended"
-grep -q '\[ ! -L "\$HOME/mwk-work" \]' dot_mwk-shell.sh.tmpl && ok "a symlinked ~/mwk-work is refused, not respawned forever" \
+grep -q '\[ ! -L "\$HOME/piy-work" \]' dot_piy-shell.sh.tmpl && ok "a symlinked ~/piy-work is refused, not respawned forever" \
   || no "a symlinked root is refused" "miniserve -P exits at once on a symlinked root; every shell would spawn another"
-grep -q 'mwk-server.log' dot_mwk-shell.sh.tmpl && grep -q 'mwk-server.log' dot_claude/create_CLAUDE.md \
+grep -q 'piy-server.log' dot_piy-shell.sh.tmpl && grep -q 'piy-server.log' dot_claude/create_CLAUDE.md \
   && ok "the server logs somewhere, and the agent is told where" || no "the server logs somewhere the agent knows" "every failure went to /dev/null"
 grep -q 'mise/shims' dot_claude/modify_settings.json && ok "the settings merge names the shim path for jq" \
   || no "the settings merge names the shim path" "no jq → the merge silently no-ops and chezmoi reports clean"
@@ -228,10 +228,10 @@ grep -q 'mise/shims' dot_claude/modify_settings.json && ok "the settings merge n
 # Comment lines excluded: the comment there explains what the old guard got wrong, and a
 # check that cannot tell code from the history written above it forces you to delete the
 # history to stay green.
-grep -v '^[[:space:]]*#' dot_mwk-shell.sh.tmpl | grep -q 'pgrep -x miniserve' \
+grep -v '^[[:space:]]*#' dot_piy-shell.sh.tmpl | grep -q 'pgrep -x miniserve' \
   && no "the server guard is port-specific" "pgrep -x matches ANY miniserve, whatever it serves" \
   || ok "the server guard is port-specific, not by process name"
-grep -q '127.0.0.1:29200/ 2>/dev/null; then' dot_mwk-shell.sh.tmpl \
+grep -q '127.0.0.1:29200/ 2>/dev/null; then' dot_piy-shell.sh.tmpl \
   && ok "…it probes 29200 itself" || no "the guard probes 29200" "nothing asks whether their page answers"
 grep -q "pkill -f 'miniserve .\*-p 29200'" uninstall.sh \
   && ok "uninstall stops OUR server, not every miniserve" \
@@ -249,10 +249,10 @@ grep -qF "$first" prompts/setup.md \
   && ok "setup.md proves ~/.claude/CLAUDE.md is ours, by its first line ($first)" \
   || no "setup.md checks the rules landed" "create_ keeps an existing file silently and nothing looks"
 
-head_ "install.sh can recover, and mwk update with it"
+head_ "install.sh can recover, and piy update with it"
 grep -q 'elif have_git && \[ ! -e "\$KIT" \]; then' install.sh \
   && ok "a kit that arrived as a tarball is not cloned over" \
-  || no "clone insists the directory is absent" "git clone into a non-empty dir is fatal — and mwk update is this script"
+  || no "clone insists the directory is absent" "git clone into a non-empty dir is fatal — and piy update is this script"
 
 head_ "The plugin step works on a machine that has never had one"
 mk=$(grep -n 'claude plugin marketplace add' prompts/setup.md | head -1 | cut -d: -f1)
@@ -264,9 +264,9 @@ else
 fi
 
 # ── the add-eats-the-store class ──────────────────────────────────────────────────────
-# Three separate mistakes had to line up for `mwk add` to replace the whole store with one
+# Three separate mistakes had to line up for `piy add` to replace the whole store with one
 # key, and each is asserted on its own so a regression names itself.
-add_body=$(sed -n '/^cmd_add()/,/^}/p' bin/executable_mwk)
+add_body=$(sed -n '/^cmd_add()/,/^}/p' bin/executable_piy)
 printf '%s\n' "$add_body" | grep -q 'old=\$(sops_d "\$f") || die' \
   && ok "a failed read stops cmd_add" || no "a failed read stops cmd_add" "this is the bug that ate the store"
 printf '%s\n' "$add_body" | grep -q 'now=\$(sops_d "\$f")' \
@@ -280,7 +280,7 @@ printf '%s\n' "$add_body" | grep -q 'mv "\$f.prev" "\$f"' \
 if command -v sops >/dev/null 2>&1 && command -v age-keygen >/dev/null 2>&1 \
    && command -v script >/dev/null 2>&1 && script -qec true /dev/null >/dev/null 2>&1; then
   T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
-  cp bin/executable_mwk "$T/mwk"; chmod +x "$T/mwk"
+  cp bin/executable_piy "$T/piy"; chmod +x "$T/piy"
   # env -i: this box's own shell exports SOPS_AGE_KEY_FILE, and that contaminated the first
   # round of store research. Nothing here may reach the real home or the real key.
   # `env` execs BINARIES — a shell function after it is "No such file", silently, which is
@@ -300,12 +300,12 @@ if command -v sops >/dev/null 2>&1 && command -v age-keygen >/dev/null 2>&1 \
   noshim=$(printf '%s' "$PATH" | tr ':' '\n' | grep -v 'mise/shims' | paste -sd:)
   # NO GIT_AUTHOR_*/GIT_COMMITTER_* here, deliberately. Injecting an identity is the suite
   # arranging the precondition its own "each add is a commit" assertion depends on: git
-  # refuses to commit without one, `mwk` swallowed that refusal behind `|| true`, and a
+  # refuses to commit without one, `piy` swallowed that refusal behind `|| true`, and a
   # beginner's store had zero commits under a green "Stored" (reproduced 2026-09-18).
-  # `mwk` now sets a LOCAL identity on the store repo, so this runs clean for a real
+  # `piy` now sets a LOCAL identity on the store repo, so this runs clean for a real
   # reason. Put these four variables back and the assertion below stops testing anything.
-  clean() { env -i HOME="$T" PATH="$tooldirs$noshim" TERM=dumb MWK_STORE="$T/keys" MWK_KEY="$T/key.txt" "$@"; }
-  cadd()  { clean script -qec "$T/mwk add $*" /dev/null; }
+  clean() { env -i HOME="$T" PATH="$tooldirs$noshim" TERM=dumb PIY_STORE="$T/keys" PIY_KEY="$T/key.txt" "$@"; }
+  cadd()  { clean script -qec "$T/piy add $*" /dev/null; }
   names() { clean env SOPS_AGE_KEY_FILE="$T/key.txt" sops -d --input-type dotenv --output-type dotenv "$T/keys/keys.enc.env" 2>/dev/null \
             | grep -oE '^[A-Z]+' | sort -u | tr '\n' ' '; }
   printf 'value-a\n' | cadd ALPHA >/dev/null 2>&1
@@ -324,8 +324,8 @@ if command -v sops >/dev/null 2>&1 && command -v age-keygen >/dev/null 2>&1 \
     # (2) a value with a space AND a backtick must come back byte for byte through `run`,
     # and the backtick must not execute. Sourcing the dotenv did both wrong.
     printf 'has a space `touch %s/PWNED` end\n' "$T" | cadd TRICKY >/dev/null 2>&1
-    got=$(clean "$T/mwk" run -- sh -c 'printf %s "$TRICKY"' 2>/dev/null || true)
-    is "a value with a space and a backtick round-trips through mwk run" "$got" "has a space \`touch $T/PWNED\` end"
+    got=$(clean "$T/piy" run -- sh -c 'printf %s "$TRICKY"' 2>/dev/null || true)
+    is "a value with a space and a backtick round-trips through piy run" "$got" "has a space \`touch $T/PWNED\` end"
     [ -e "$T/PWNED" ] && no "a stored value is never executed" "the backtick ran — the dotenv was sourced" \
       || ok "a stored value is never executed (no PWNED file)"
     # (3) a multi-line paste is refused and stores nothing — the rest of the paste used to
@@ -343,9 +343,9 @@ if command -v sops >/dev/null 2>&1 && command -v age-keygen >/dev/null 2>&1 \
     cp "$T/key.full" "$T/key.txt"
     # (4) run with the STORE FILE missing must die, not run the command with no keys.
     mv "$T/keys/keys.enc.env" "$T/keys/keys.bak"
-    clean "$T/mwk" run -- true >/dev/null 2>&1; rc=$?
+    clean "$T/piy" run -- true >/dev/null 2>&1; rc=$?
     mv "$T/keys/keys.bak" "$T/keys/keys.enc.env"
-    [ "$rc" != 0 ] && ok "mwk run with no store file refuses (exit $rc)" || no "mwk run with no store file refuses" "it ran the command with no keys, exit 0"
+    [ "$rc" != 0 ] && ok "piy run with no store file refuses (exit $rc)" || no "piy run with no store file refuses" "it ran the command with no keys, exit 0"
     # (7) half a restore — the store file present, .sops.yaml absent, no key — must refuse
     # rather than mint a key over their data.
     mv "$T/key.txt" "$T/key.bak"; mv "$T/keys/.sops.yaml" "$T/keys/sops.bak"
@@ -363,7 +363,7 @@ if command -v sops >/dev/null 2>&1 && command -v age-keygen >/dev/null 2>&1 \
     is "…and the store is exactly as it was" "$(names)" "ALPHA BETA RESTORED TRICKY "
     [ -s "$T/key.txt" ] && ok "…and no new key was minted over the missing one" \
       || no "no new key minted" "a fresh key here locks them out of their own repo"
-    # ── what the 2026-09-18 review reproduced, each red on the old mwk ────────────────
+    # ── what the 2026-09-18 review reproduced, each red on the old piy ────────────────
     # The store is a git repo even when git was not usable on the add that CREATED it —
     # a Mac still downloading Command Line Tools. `git init` used to sit in the once-only
     # branch, so that store was never a repo again and every add committed nothing.
@@ -378,7 +378,7 @@ if command -v sops >/dev/null 2>&1 && command -v age-keygen >/dev/null 2>&1 \
     printf 'value-p\n\n' | cadd PRESSED >/dev/null 2>&1
     printf '%s' "$(names)" | grep -q PRESSED && ok "a trailing Enter after the paste is not a second line" \
       || no "a trailing Enter is accepted" "the same key stored or refused depending on reaction time"
-    got=$(clean "$T/mwk" run -- sh -c 'printf %s "$PRESSED"' 2>/dev/null || true)
+    got=$(clean "$T/piy" run -- sh -c 'printf %s "$PRESSED"' 2>/dev/null || true)
     is "…and the value is whole" "$got" "value-p"
     # A timing window cannot guard a multi-line secret: a second line that arrives after
     # the drain is invisible, and line one was stored under a green "Stored". Refuse on
@@ -407,20 +407,20 @@ head_ "Only the right things reach a stranger's home directory"
 # .chezmoiignore is an ALLOW-list and its patterns match TARGET names, not source names —
 # get that wrong and it places NOTHING while looking correct. Assert both directions.
 managed=$(chezmoi managed --source . 2>/dev/null)
-for want in .claude/CLAUDE.md .claude/settings.json .claude/statusline.sh .claude/skills/mwk-save/SKILL.md \
-            .claude/skills/mwk-tasks/SKILL.md .claude/skills/mwk-onboard/SKILL.md .mwk-shell.sh bin/mwk \
-            mwk-work/README.md; do
+for want in .claude/CLAUDE.md .claude/settings.json .claude/statusline.sh .claude/skills/piy-save/SKILL.md \
+            .claude/skills/piy-tasks/SKILL.md .claude/skills/piy-onboard/SKILL.md .piy-shell.sh bin/piy \
+            piy-work/README.md; do
   printf '%s\n' "$managed" | grep -qx "$want" && ok "placed: $want" || no "placed: $want" "MISSING"
 done
 # The howto is placed ONCE and never overwritten — ours on day one, theirs after. That is
 # the create_ prefix, and nothing else: a plain file would revert their edits every apply.
-[ -f mwk-work/create_README.md ] && ok "the howto is a create_ (write-once) file" \
+[ -f piy-work/create_README.md ] && ok "the howto is a create_ (write-once) file" \
   || no "the howto is a create_ file" "a managed file would overwrite what they changed"
-grep -q 'bookmark' mwk-work/create_README.md && ok "…and it knows it is the page they bookmark" \
+grep -q 'bookmark' piy-work/create_README.md && ok "…and it knows it is the page they bookmark" \
   || no "the howto knows it is the served front page" "it reads as a file, not as http://127.0.0.1:29200/"
-grep -q 'mwk-work' dot_claude/skills/mwk-learn/SKILL.md && ! grep -q 'What I have learnt' dot_claude/skills/mwk-learn/SKILL.md \
-  && ok "mwk-learn writes its log elsewhere and never into the howto" || no "mwk-learn stays out of mwk-work" "it would write over the front page"
-n=$(grep -c 'matewishkey.com/show' mwk-work/create_README.md README.md | awk -F: '{s+=$2} END{print s}')
+grep -q 'piy-work' dot_claude/skills/piy-learn/SKILL.md && ! grep -q 'What I have learnt' dot_claude/skills/piy-learn/SKILL.md \
+  && ok "piy-learn writes its log elsewhere and never into the howto" || no "piy-learn stays out of piy-work" "it would write over the front page"
+n=$(grep -c 'promptityourself.com/show' piy-work/create_README.md README.md | awk -F: '{s+=$2} END{print s}')
 is "the show is mentioned exactly twice across what a person reads (howto + README)" "$n" "2"
 for never in uninstall.sh README.md CLAUDE.md install.sh mise.toml mise.lock \
              test prompts docs site-templates mwk/ bin/mwk-debug projects; do
@@ -433,6 +433,65 @@ for term in td-sops 'work\.l' devproxy '192\.168' dotfiles-cz dokku healthchecks
   n=$(grep -rniI "$term" dot_claude/ bin/ prompts/ 2>/dev/null | wc -l)
   is "no reference to $term" "$n" "0"
 done
+
+head_ "The rename — nothing a person reads says mwk, and an old machine comes across"
+# Mate Wish Key → Prompt It Yourself, mwk → piy (2026-10-02). The old words may live only in
+# the migration code and in history, never in what a person or their agent reads.
+for pat in 'mwk' 'Mate Wish Key' 'matewishkey'; do
+  n=$(grep -rnI -- "$pat" README.md HOW-TO.md prompts/ dot_claude/ piy-work/ site-templates/ .github/ 2>/dev/null | wc -l)
+  is "nothing a person reads says '$pat'" "$n" "0"
+done
+retire=.chezmoiscripts/run_onchange_before_00-retire-mwk.sh
+sh -n "$retire" && ok "the retire script is valid sh" || no "the retire script is valid sh" "syntax error"
+# Run it for real against a home that looks like a machine set up before the rename.
+R=$(mktemp -d)
+mkdir -p "$R/mwk-work/proj" "$R/bin" "$R/.claude/skills/mwk-save" "$R/.claude/skills/mwk-mine"
+printf 'their page\n' > "$R/mwk-work/proj/index.html"
+printf 'Type `mwk add NAME`, then /mwk-save. Mate Wish Key, matewishkey.com/show/\nMY OWN LINE\n' > "$R/mwk-work/README.md"
+printf 'Use `mwk run --`, keep pages in ~/mwk-work, never touch mwk-rider\n' > "$R/.claude/CLAUDE.md"
+printf 'export FOO=1\n[ -f "$HOME/.mwk-shell.sh" ] && . "$HOME/.mwk-shell.sh"   # mwk-genie\n' > "$R/.bashrc"
+: > "$R/bin/mwk"; : > "$R/.mwk-shell.sh"
+# The fixture must be there before anything is asserted about what survives it.
+if [ -f "$R/mwk-work/README.md" ] && grep -q mwk-shell "$R/.bashrc" && [ -d "$R/.claude/skills/mwk-mine" ]; then
+  ok "the old-machine fixture was planted (precondition)"
+  HOME="$R" sh "$retire" >/dev/null 2>&1; rc=$?
+  is "the retire script exits 0" "$rc" "0"
+  [ -f "$R/piy-work/proj/index.html" ] && [ ! -e "$R/mwk-work" ] && ok "~/mwk-work is MOVED to ~/piy-work, pages and all" \
+    || no "~/mwk-work moves to ~/piy-work" "their pages are not where the server now looks"
+  grep -q 'MY OWN LINE' "$R/piy-work/README.md" 2>/dev/null && ok "…and their own edit to the howto survives" \
+    || no "their edit to the howto survives" "the move or the rename lost it"
+  is "the howto no longer says mwk or the old name" "$(grep -cE 'mwk|Mate Wish|matewishkey' "$R/piy-work/README.md")" "0"
+  grep -q '`piy add NAME`, then /piy-save' "$R/piy-work/README.md" && ok "…it says piy add and /piy-save now" \
+    || no "the howto names the new commands" "$(head -1 "$R/piy-work/README.md")"
+  grep -q '`piy run --`, keep pages in ~/piy-work' "$R/.claude/CLAUDE.md" && ok "their agent's rules name piy and ~/piy-work" \
+    || no "the agent's rules are renamed" "$(cat "$R/.claude/CLAUDE.md")"
+  is "the old hook line is out of .bashrc" "$(grep -c mwk-shell "$R/.bashrc" || true)" "0"
+  grep -q 'export FOO=1' "$R/.bashrc" && ok "…and the rest of .bashrc is untouched" || no "the rest of .bashrc survives" "it was emptied"
+  [ ! -e "$R/bin/mwk" ] && [ ! -e "$R/.mwk-shell.sh" ] && [ ! -e "$R/.claude/skills/mwk-save" ] \
+    && ok "the old command, shell file and skills are gone" || no "the old command, shell file and skills are gone" "something of the old kit is left"
+  [ -d "$R/.claude/skills/mwk-mine" ] && ok "…but a skill of THEIRS that starts mwk- is kept" \
+    || no "a skill of theirs survives" "the cleanup took something that was not ours"
+  out=$(HOME="$R" sh "$retire" 2>&1); is "a second run does nothing and says nothing" "$out" ""
+fi
+rm -rf "$R"
+F=$(mktemp -d); out=$(HOME="$F" sh "$retire" 2>&1); rc=$?; rm -rf "$F"
+is "on a fresh machine it says nothing" "$out" ""; is "…and exits 0" "$rc" "0"
+grep -q 'OLD_KIT="\$HOME/projects/mwk-genie"' install.sh && grep -q 'mwk-genie/install.sh' bin/executable_piy \
+  && ok "install.sh moves the old kit folder, and piy update can find it there first" \
+  || no "the kit folder migrates" "the first piy update on an old machine says there is nothing to update"
+
+# A tarball kit is updated by untarring over itself, so the renamed sources are still on disk.
+# They must not be placed again. Plant them in a copy and ask chezmoi what it would place.
+S=$(mktemp -d); cp -a . "$S/r"
+mkdir -p "$S/r/dot_claude/skills/mwk-save" "$S/r/mwk-work"; echo x > "$S/r/dot_claude/skills/mwk-save/SKILL.md"
+cp bin/executable_piy "$S/r/bin/executable_mwk"; cp dot_piy-shell.sh.tmpl "$S/r/dot_mwk-shell.sh.tmpl"; cp piy-work/create_README.md "$S/r/mwk-work/"
+if [ -f "$S/r/bin/executable_mwk" ] && [ -f "$S/r/dot_claude/skills/mwk-save/SKILL.md" ]; then
+  stale=$(chezmoi managed --source "$S/r" 2>/dev/null | grep -v 'retire-mwk' | grep -c mwk || true)
+  is "stale mwk sources left by a tarball update are NOT placed again" "$stale" "0"
+else
+  no "the stale-source fixture was planted" "nothing below it ran"
+fi
+rm -rf "$S"
 
 head_ "It can be taken back off"
 sh -n uninstall.sh && ok "uninstall.sh is valid sh" || no "uninstall.sh is valid sh" "syntax error"
@@ -462,39 +521,39 @@ head_ "The starter websites"
 for f in site-templates/one-page/index.html site-templates/pages/index.html \
          site-templates/pages/work.html site-templates/pages/about.html; do
   [ -f "$f" ] && ok "$f exists" || no "$f exists" "missing"
-  grep -q 'href="mwk.css"' "$f" && ok "$(basename $(dirname "$f"))/$(basename "$f") loads the stylesheet beside it" \
-    || no "$f loads mwk.css" "a template that renders unstyled is worse than none"
+  grep -q 'href="piy.css"' "$f" && ok "$(basename $(dirname "$f"))/$(basename "$f") loads the stylesheet beside it" \
+    || no "$f loads piy.css" "a template that renders unstyled is worse than none"
 done
 for d in one-page pages; do
-  [ -f "site-templates/$d/mwk.css" ] && ok "$d ships its own copy of mwk.css" \
-    || no "$d ships mwk.css" "copying the folder would give an unstyled site"
+  [ -f "site-templates/$d/piy.css" ] && ok "$d ships its own copy of piy.css" \
+    || no "$d ships piy.css" "copying the folder would give an unstyled site"
 done
 # Each template must carry the credit, and it must be inside a comment. Putting our name
 # on a stranger's site by default is the thing the README promises we do not do.
 for f in site-templates/*/*.html; do
-  n=$(grep -c 'matewishkey' "$f" || true)
+  n=$(grep -c 'promptityourself' "$f" || true)
   is "$(basename $(dirname "$f"))/$(basename "$f") carries the credit" "$n" "1"
   if command -v perl >/dev/null 2>&1; then
-    bare=$(perl -0777 -pe 's/<!--.*?-->//gs' "$f" | grep -c 'matewishkey' || true)
+    bare=$(perl -0777 -pe 's/<!--.*?-->//gs' "$f" | grep -c 'promptityourself' || true)
     is "…and it is commented out, not live" "$bare" "0"
   else
     no "…and it is commented out (SKIPPED)" "no perl — this did not run, it is not a pass"
   fi
 done
 for d in one-page pages; do
-  if cmp -s site-templates/mwk.css "site-templates/$d/mwk.css"; then ok "$d/mwk.css matches the master"
-  else no "$d/mwk.css matches the master" "the copies have drifted"; fi
+  if cmp -s site-templates/piy.css "site-templates/$d/piy.css"; then ok "$d/piy.css matches the master"
+  else no "$d/piy.css matches the master" "the copies have drifted"; fi
 done
-grep -q 'site-templates' dot_claude/skills/mwk-new/SKILL.md \
-  && ok "/mwk-new knows the templates exist" || no "/mwk-new knows the templates exist" "nothing would ever reach for them"
+grep -q 'site-templates' dot_claude/skills/piy-new/SKILL.md \
+  && ok "/piy-new knows the templates exist" || no "/piy-new knows the templates exist" "nothing would ever reach for them"
 for want in 'input/' 'archive/' '.gitignore'; do
-  grep -q -- "$want" dot_claude/skills/mwk-new/SKILL.md && ok "/mwk-new builds $want" \
-    || no "/mwk-new builds $want" "the house rule in create_CLAUDE.md promises it"
+  grep -q -- "$want" dot_claude/skills/piy-new/SKILL.md && ok "/piy-new builds $want" \
+    || no "/piy-new builds $want" "the house rule in create_CLAUDE.md promises it"
 done
 grep -q 'site-templates/report/index.html' dot_claude/create_CLAUDE.md \
   && ok "the page rule points at the report template" || no "the page rule points at the report template" "the agent would write pages from nothing"
-grep -q 'mwk-work/<project>/<YYYY-MM-DD_slug>' dot_claude/create_CLAUDE.md \
-  && ok "…and at ~/mwk-work/<project>/<date_slug>/ — work.l's layout" || no "the page rule names the layout" "pages would land anywhere"
+grep -q 'piy-work/<project>/<YYYY-MM-DD_slug>' dot_claude/create_CLAUDE.md \
+  && ok "…and at ~/piy-work/<project>/<date_slug>/ — work.l's layout" || no "the page rule names the layout" "pages would land anywhere"
 grep -q 'curl -sf -o /dev/null http://127.0.0.1:29200/' dot_claude/create_CLAUDE.md \
   && ok "…and checks the link answers before handing it over" || no "the agent checks the link first" "a dead link is the page's whole failure mode"
 grep -q '<link' site-templates/report/index.html \
@@ -507,21 +566,21 @@ for d in dot_claude/skills/*/; do
   fm=$(awk 'NR>1 && /^---$/{exit} /^name:/{print $2}' "$d/SKILL.md")
   is "$name: frontmatter name matches its directory" "$fm" "$name"
 done
-grep -q 'projects/learning/README.md' dot_claude/skills/mwk-learn/SKILL.md \
-  && ok "mwk-learn writes to ~/projects/learning, in git" \
-  || no "mwk-learn writes to ~/projects/learning" "still writing somewhere that is not backed up"
-grep -qi 'artifact:\|29200' dot_claude/skills/mwk-learn/SKILL.md \
-  && no "mwk-learn has no page or artifact machinery left" "found one" \
-  || ok "mwk-learn has no page or artifact machinery left"
+grep -q 'projects/learning/README.md' dot_claude/skills/piy-learn/SKILL.md \
+  && ok "piy-learn writes to ~/projects/learning, in git" \
+  || no "piy-learn writes to ~/projects/learning" "still writing somewhere that is not backed up"
+grep -qi 'artifact:\|29200' dot_claude/skills/piy-learn/SKILL.md \
+  && no "piy-learn has no page or artifact machinery left" "found one" \
+  || ok "piy-learn has no page or artifact machinery left"
 # Every skill declares the binaries it calls, and each is either pinned in mise.toml or a
-# thing every machine has. mwk-save was written needing gh and nothing installed it.
+# thing every machine has. piy-save was written needing gh and nothing installed it.
 for d in dot_claude/skills/*/; do
   name=$(basename "$d")
   req=$(grep -oE '<!-- requires: [a-z0-9 -]+ -->' "$d/SKILL.md" | sed 's/<!-- requires: //; s/ -->//')
   [ -n "$req" ] || { no "$name declares what it requires" "no <!-- requires: … --> line"; continue; }
   for b in $req; do
     case "$b" in git|curl|sh|bash|python3) ok "$name requires $b (system)";;
-      mwk) ok "$name requires mwk (the kit's own)";;
+      piy) ok "$name requires piy (the kit's own)";;
       gh)  grep -q 'cli/cli' mise.toml && ok "$name requires gh — pinned" || no "$name requires gh" "not in mise.toml";;
       *)   grep -q "/$b\"" mise.toml && ok "$name requires $b — pinned" || no "$name requires $b" "not in mise.toml";;
     esac
@@ -531,8 +590,8 @@ done
 # BOTH DIRECTIONS, because a rename is the string-replace-that-silently-misses in its most
 # dangerous form: the skill still loads under its old directory name, so nothing fails —
 # the documents just promise a name that no longer answers. Backticks are required: a bare
-# /mwk-… also matched the repo path when it was github.com/matewishkey/mwk-genie.
-offered=$(grep -ohE '`/mwk-[a-z]+`' README.md HOW-TO.md dot_claude/create_CLAUDE.md | tr -d '`/' | sort -u)
+# /piy-… also matched the repo path, which is github.com/promptityourself/piy-genie.
+offered=$(grep -ohE '`/piy-[a-z]+`' README.md HOW-TO.md dot_claude/create_CLAUDE.md | tr -d '`/' | sort -u)
 ondisk=$(for d in dot_claude/skills/*/; do basename "$d"; done | sort -u)
 # Every skill must be in EACH person-facing document, not just somewhere — HOW-TO.md is the
 # website's page and README.md the repo's; a skill named in one and not the other is a
@@ -574,7 +633,7 @@ done
 head_ "Every URL handed to a stranger"
 if command -v curl >/dev/null 2>&1; then
   urls=$(grep -rhoE 'https?://[A-Za-z0-9._~:/?#@!$&()*+,;=%-]+' \
-          README.md HOW-TO.md mwk-work/ prompts/ dot_claude/ .github/ install.sh mise.toml 2>/dev/null \
+          README.md HOW-TO.md piy-work/ prompts/ dot_claude/ .github/ install.sh mise.toml 2>/dev/null \
         | sed -E 's/[.,)?]+$//' | sort -u \
         | grep -vE 'localhost|127\.0\.0\.1|example\.')
   for u in $urls; do
@@ -583,7 +642,7 @@ if command -v curl >/dev/null 2>&1; then
       200|204) ok "$code  $u" ;;
       405)     ok "405  $u (POST-only endpoint — reachable)" ;;
       # An API a skill calls WITH a key answers 400/401 to a bare curl — that is the endpoint
-      # existing and refusing, which is what /mwk-onboard relies on. Only for api.* hosts;
+      # existing and refusing, which is what /piy-onboard relies on. Only for api.* hosts;
       # a page a person opens still has to be a 200.
       400|401|403) case "$u" in https://api.*) ok "$code  $u (needs a key — reachable)" ;;
                                  # claude.ai sits behind Cloudflare's browser challenge: 403 to curl with ANY

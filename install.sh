@@ -154,7 +154,20 @@ step "no questions, and no password"
 # There is nothing left to ask, which is why this can run unattended. chezmoi's prompts
 # were the only thing that needed a TTY; with none, an agent can run this script too.
 # Any extra arguments still reach chezmoi, which is how the rehearsal drives it.
-mise exec -C "$KIT" -- chezmoi init --apply --source "$KIT" "$@"
+#
+# The kit's OWN chezmoi config, never the default one. chezmoi init writes its config to
+# ~/.config/chezmoi/chezmoi.toml unless told otherwise, so on a machine where somebody
+# already uses chezmoi for their own dotfiles the kit silently replaced their settings
+# (measured 2026-10-03 in a scratch home). With --config the config AND the state file
+# (chezmoistate.boltdb, which sits beside it) live in ~/.config/piy and nothing else is read.
+CZ_CONF="$HOME/.config/piy/chezmoi.toml"
+mise exec -C "$KIT" -- chezmoi init --apply --source "$KIT" --config "$CZ_CONF" "$@"
+# Before 2026-10-03 the kit's config WAS the default one. Take it away only if it is
+# provably ours (its sourceDir is the kit); anybody else's stays exactly as it is.
+if [ -f "$HOME/.config/chezmoi/chezmoi.toml" ] \
+   && grep -qE '^sourceDir = ".*/projects/(mwk|piy)-genie"$' "$HOME/.config/chezmoi/chezmoi.toml"; then
+  rm -rf "$HOME/.config/chezmoi"
+fi
 
 printf '\n  %s────────────────────────────────────────────────────────────%s\n' "$DIM" "$R"
 # Say which thing actually happened. Step 4 swallows a failed Claude Code install on

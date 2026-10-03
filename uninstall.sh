@@ -123,8 +123,16 @@ fi
 # including one the agent had started for them on another port minutes earlier.
 pkill -f 'miniserve .*-p 29200' 2>/dev/null && item "stopped" "the page on 127.0.0.1:29200" || true
 for s in "$HOME"/.claude/skills/piy-*; do [ -e "$s" ] && wipe "$s"; done
-wipe "$HOME/.config/chezmoi"
-wipe "$HOME/.local/share/chezmoi"
+# The kit's own chezmoi config and state. NOT ~/.local/share/chezmoi, which the kit never
+# creates: it is where people who use chezmoi keep their own dotfiles, and this line used to
+# rm -rf it (measured 2026-10-03 — a file of theirs, gone, not even in the trash).
+wipe "$HOME/.config/piy"
+# ~/.config/chezmoi only when it is provably ours (an install from before 2026-10-03, whose
+# sourceDir is the kit). Anybody else's chezmoi is not ours to touch.
+if [ -f "$HOME/.config/chezmoi/chezmoi.toml" ] \
+   && grep -qE '^sourceDir = ".*/projects/(mwk|piy)-genie"$' "$HOME/.config/chezmoi/chezmoi.toml"; then
+  wipe "$HOME/.config/chezmoi"
+fi
 
 head_ "Things that might be yours"
 

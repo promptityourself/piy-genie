@@ -102,7 +102,7 @@ docker run --rm ubuntu:24.04 bash -euc "
   n=\$(su - guest -c 'grep -c piy-shell.sh ~/.bashrc 2>/dev/null || true'); n=\${n:-0}
   ok 'source line in ~/.bashrc appears exactly once' \"\$([ \"\$n\" = 1 ] && echo PASS || echo \"FAIL (n=\$n)\")\"
   [ \"\$n\" = 1 ] || FAILED=1
-  su - guest -c '. ~/.piy-shell.sh; chezmoi apply --source ~/projects/piy-genie' >/dev/null 2>&1 || true
+  su - guest -c '. ~/.piy-shell.sh; chezmoi apply --source ~/projects/piy-genie --config ~/.config/piy/chezmoi.toml' >/dev/null 2>&1 || true
   n2=\$(su - guest -c 'grep -c piy-shell.sh ~/.bashrc 2>/dev/null || true'); n2=\${n2:-0}
   ok 'still exactly once after a second apply' \"\$([ \"\$n2\" = 1 ] && echo PASS || echo \"FAIL (n=\$n2)\")\"
   [ \"\$n2\" = 1 ] || FAILED=1
@@ -123,14 +123,14 @@ p=os.path.expanduser(\"~/.claude/settings.json\")
 d=json.load(open(p)); d[\"enabledPlugins\"]={\"someone/thing\":True}; json.dump(d,open(p,\"w\"))
 PY'
   chk 'the fixture itself was planted (precondition)' 'grep -q someone/thing ~/.claude/settings.json'
-  su - guest -c '. ~/.piy-shell.sh; chezmoi apply --source ~/projects/piy-genie' >/dev/null 2>&1 || true
+  su - guest -c '. ~/.piy-shell.sh; chezmoi apply --source ~/projects/piy-genie --config ~/.config/piy/chezmoi.toml' >/dev/null 2>&1 || true
   chk 'a key Claude Code wrote survives an apply'  'grep -q someone/thing ~/.claude/settings.json'
   chk 'and ours is still asserted'                 'grep -q opus ~/.claude/settings.json'
   echo '  --- the howto is theirs after day one ---'
   # create_ = write once. Their edit to the top of the file must survive an apply; a managed
   # file would put our copy back and silently delete what they changed.
   su - guest -c 'printf \"\\nTHEIR EDIT SURVIVES\\n\" >> ~/piy-work/README.md'
-  su - guest -c '. ~/.piy-shell.sh; chezmoi apply --source ~/projects/piy-genie' >/dev/null 2>&1 || true
+  su - guest -c '. ~/.piy-shell.sh; chezmoi apply --source ~/projects/piy-genie --config ~/.config/piy/chezmoi.toml' >/dev/null 2>&1 || true
   chk 'their edit to the howto survives an apply' 'grep -q \"THEIR EDIT SURVIVES\" ~/piy-work/README.md'
 
   echo '  --- take it all off, then put it back on ---'
@@ -139,7 +139,7 @@ PY'
   su - guest -c 'mkdir -p ~/.config/sops/age && echo AGE-SECRET-KEY-1FAKE > ~/.config/sops/age/keys.txt'
   su - guest -c 'sh ~/projects/piy-genie/uninstall.sh --all' >/dev/null 2>&1 || { echo '  UNINSTALL FAILED'; FAILED=1; }
 
-  for leftover in .piy-shell.sh bin/piy .claude/skills/piy-save projects/piy-genie .config/chezmoi; do
+  for leftover in .piy-shell.sh bin/piy .claude/skills/piy-save projects/piy-genie .config/piy .config/chezmoi; do
     if su - guest -c \"test -e ~/\$leftover\" 2>/dev/null; then ok \"gone: ~/\$leftover\" FAIL; FAILED=1
     else ok \"gone: ~/\$leftover\" PASS; fi
   done
@@ -189,7 +189,26 @@ PY'
   chkv 'their page answers on 29200 from ~/piy-work'  'bash -ic true >/dev/null 2>&1; sleep 2; curl -sf -m 5 http://127.0.0.1:29200/proj/index.html | grep -q THEIR-PAGE'
   su - veteran -c '. ~/.piy-shell.sh; PIY_REF=$REF piy update </dev/null' >/dev/null 2>&1 || { echo '  PIY UPDATE FAILED'; FAILED=1; }
   chkv 'piy update moved the kit to ~/projects/piy-genie' 'test -f ~/projects/piy-genie/install.sh && ! test -e ~/projects/mwk-genie'
+  chkv 'the old kit config in ~/.config/chezmoi went with it' '! test -e ~/.config/chezmoi && test -f ~/.config/piy/chezmoi.toml'
   chkv '…and piy still runs after it'                 'bash -ic piy </dev/null | grep -q \"piy add\"'
+
+  echo '  --- somebody who already uses chezmoi for their own dotfiles ---'
+  # Before 2026-10-03 the kit wrote the DEFAULT chezmoi config, replacing theirs, and
+  # uninstall rm -rf'd ~/.local/share/chezmoi, which the kit never made. Both measured. The
+  # fixture is their machine as it was before the kit arrived, not the kit's own state.
+  useradd -m -s /bin/bash dotfiler
+  su - dotfiler -c 'mkdir -p ~/.config/chezmoi ~/.local/share/chezmoi && printf \"[data]\\n  mine = true\\n\" > ~/.config/chezmoi/chezmoi.toml && echo THEIR-DOTFILE > ~/.local/share/chezmoi/dot_theirs'
+  chkd(){ if su - dotfiler -c \"\$2\" >/dev/null 2>&1; then ok \"\$1\" PASS; else ok \"\$1\" FAIL; FAILED=1; fi; }
+  chkd 'precondition: their chezmoi config and dotfiles exist' 'grep -q mine ~/.config/chezmoi/chezmoi.toml && grep -q THEIR-DOTFILE ~/.local/share/chezmoi/dot_theirs'
+  su - dotfiler -c 'curl -fsSL https://raw.githubusercontent.com/promptityourself/piy-genie/$REF/install.sh | PIY_REF=$REF sh' >/dev/null 2>&1 \
+    || { echo '  DOTFILER INSTALL FAILED'; FAILED=1; }
+  chkd 'the kit installed (piy runs)'                 'bash -ic \"command -v piy\"'
+  chkd 'their chezmoi config is untouched by install' 'grep -q mine ~/.config/chezmoi/chezmoi.toml && ! grep -q piy-genie ~/.config/chezmoi/chezmoi.toml'
+  chkd 'the kit keeps its own in ~/.config/piy'      'grep -q piy-genie ~/.config/piy/chezmoi.toml'
+  su - dotfiler -c 'sh ~/projects/piy-genie/uninstall.sh --all' >/dev/null 2>&1 || { echo '  DOTFILER UNINSTALL FAILED'; FAILED=1; }
+  chkd 'uninstall --all leaves their chezmoi config'  'grep -q mine ~/.config/chezmoi/chezmoi.toml'
+  chkd '…and their dotfiles'                          'grep -q THEIR-DOTFILE ~/.local/share/chezmoi/dot_theirs'
+  chkd '…and takes the kit config away'               '! test -e ~/.config/piy'
 
   echo REHEARSAL-COMPLETE
   echo; [ \"\$FAILED\" = 0 ] && echo 'ALL GREEN' || { echo 'SOME FAILED'; exit 1; }

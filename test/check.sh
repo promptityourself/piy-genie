@@ -213,6 +213,20 @@ grep -q 'if \[ ! -t 1 \]; then' install.sh && grep -q 'do NOT tell them' install
   && ok "…and says something different when a tool is reading, not a person" \
   || no "the banner knows a tool from a person" "'close this window' reaches the agent mid-setup and reads as 'quit me'"
 
+head_ "The kit keeps its own chezmoi, and leaves anybody else's alone"
+# chezmoi init writes ~/.config/chezmoi/chezmoi.toml by default, which replaced the settings of
+# anybody already using chezmoi; and uninstall rm -rf'd ~/.local/share/chezmoi, their dotfiles,
+# which the kit never created. Both measured 2026-10-03. rehearse.sh runs the real thing.
+grep -q 'CZ_CONF="\$HOME/.config/piy/chezmoi.toml"' install.sh && grep -q 'chezmoi init --apply --source "\$KIT" --config "\$CZ_CONF"' install.sh \
+  && ok "install.sh gives chezmoi the kit's own config (~/.config/piy)" \
+  || no "install.sh uses its own chezmoi config" "the default one belongs to anybody who already uses chezmoi"
+grep -v '^[[:space:]]*#' uninstall.sh | grep -q 'share/chezmoi' \
+  && no "uninstall never touches ~/.local/share/chezmoi" "it is their dotfiles; the kit never made it" \
+  || ok "uninstall never touches ~/.local/share/chezmoi (their dotfiles)"
+grep -v '^[[:space:]]*#' uninstall.sh | grep -qE '^wipe "\$HOME/.config/chezmoi"$' \
+  && no "uninstall removes ~/.config/chezmoi only when it is the kit's" "an unconditional wipe takes somebody else's config" \
+  || ok "uninstall removes ~/.config/chezmoi only when its sourceDir is the kit"
+
 head_ "uninstall.sh — unhooking is honest"
 grep -q 'rc_grep' uninstall.sh && grep -q 'cat "\$tmp" > "\$rc"' uninstall.sh \
   && ok "an rc file whose only line is the hook is unhooked, and a symlinked rc stays a symlink" \

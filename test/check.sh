@@ -627,6 +627,10 @@ for f in HOW-TO.md prompts/install.md prompts/setup.md; do
   [ -f "$f" ] && ok "$f is here (their build 404s without it)" \
                || no "$f is missing" "matewishkey-web fetches it from main — their build fails, ours does not"
 done
+# HOW-TO.md is reader copy on promptityourself.com, and that site allows no em dash in anything a
+# visitor reads (#17). Their guard exempts our file so an edit here cannot break their build —
+# which means only this line holds it. The prompts render in <pre> and are exempt for good.
+is "HOW-TO.md has no em dash (the site renders it as reader copy)" "$(grep -c '—' HOW-TO.md || true)" "0"
 for slot in 'PROMPT ONE goes here' 'PROMPT TWO goes here'; do
   grep -qF "<!-- $slot" HOW-TO.md \
     && ok "HOW-TO.md still carries the <!-- $slot --> marker" \

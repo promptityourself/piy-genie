@@ -185,8 +185,10 @@ party's deploy, and our own `check.sh` stays green while it does.** Never do it 
 comment: both `<pre>` blocks are byte-for-byte the first fence of `install.md` (5588 chars) and
 `setup.md` (7346 chars) on `main`; all 52 prose fragments of `HOW-TO.md` appear in the page
 (0 missing, once smart quotes and em dashes are normalised — the raw compare showed 9 false
-misses on `'` vs `’` alone); the slot comments and the two `— copy the grey box.` GitHub
-fallback lines are dropped in their render; relative links are repointed at `blob/main`. **They do
+misses on `'` vs `’` alone); the slot comments are dropped in their render, but the two
+`…: copy the grey box.` GitHub fallback lines are NOT (this said they were until 2026-10-03;
+`GenieHowTo.astro` only splits on the slots, and both lines show on the live page under each
+copy block); relative links are repointed at `blob/main`. **They do
 NOT rebuild on our commits** — their deploy is a manual `wrangler deploy` from `.11`. The paragraph
 from `88be94a` was live the next day because somebody deployed, and this line used to read that as a
 trigger. Measured 2026-10-03: the `mwk` → `piy` rename sat unpublished, so a change that a reader

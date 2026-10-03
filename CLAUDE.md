@@ -87,6 +87,7 @@ from and asserts `setup.md` names each one.
 | `mise` shims resolve from the config **in scope** | `mise.toml` is a project config, so tools were active only inside the kit. `mise use -g` fixes it |
 | A plain chezmoi-managed `settings.json` | With no TTY it **aborts the whole apply**; with `--force` it reverts the file and destroys `enabledPlugins`. Use `modify_`; `.chezmoi.stdin` does not exist, so it must be a script. **Measured to preserve `enabledPlugins`, 2026-09-13** — it was an assumption until the fixture was proved planted |
 | `.chezmoiignore` patterns match the **target** name | `dot_claude/**` matches nothing — the target is `.claude/**`. Writing the source name places NOTHING while reading correctly |
+| **mise was the one unpinned tool, and mise.run hands out the newest DAY-OLD release** | On 2026-10-02 that was 2026.9.18, which refuses the sops SLSA provenance in `mise.lock` (no signer in the aqua registry): every fresh install died at 3/6. Fixed upstream in 2026.10.0 (jdx/mise#13856). `install.sh` pins `MISE_PIN`, passed as `MISE_VERSION` (mise.run's own variable, which also skips the age rule). Bump it on purpose, after a rehearsal |
 | **In `.chezmoiignore`, `*` matches TOP-LEVEL names only, and a `!` beats an ignore** | Measured with `chezmoi managed`, 2026-10-02. So the "ignore everything" allow-list never covered anything nested (`bin/mwk`, `.claude/skills/x`), and a `!.claude/**` un-ignored the old `mwk-*` skills over an explicit ignore line. It is gone; the old names are ignored by name. `check.sh` plants stale sources in a copy and asks what chezmoi would place |
 | `A && B \|\| C && D` groups as `((A && B) \|\| C) && D` | A successful first branch still ran the second. Use `if/elif` |
 | `[ -t 1 ]` is false inside **every** pipeline and every `$()` | It asks about the current redirection, not whether a person is there. `have_tty` asks whether `/dev/tty` **opens** |
@@ -167,7 +168,7 @@ document that ships.
 ## The cross-repo coupling — the website, and what it actually reads from here
 
 **The live page is `promptityourself.com/topics/put-the-genie-in-the-box/`** (source
-`src/content/topics/put-the-genie-in-the-box.mdx` in `mergodon/matewishkey-web`); `/wishes/…`,
+`src/content/topics/put-the-genie-in-the-box.mdx` in `mergodon/promptityourself-web`, which was `matewishkey-web`); `/wishes/…`,
 `/how-to/…` and `/projects/…` all 301 to it. It has moved three times; curl it, don't quote it.
 
 **The coupling is LIVE again — their `108b448`, matewishkey-web#82, and it makes three of our
@@ -185,8 +186,11 @@ comment: both `<pre>` blocks are byte-for-byte the first fence of `install.md` (
 `setup.md` (7346 chars) on `main`; all 52 prose fragments of `HOW-TO.md` appear in the page
 (0 missing, once smart quotes and em dashes are normalised — the raw compare showed 9 false
 misses on `'` vs `’` alone); the slot comments and the two `— copy the grey box.` GitHub
-fallback lines are dropped in their render; relative links are repointed at `blob/main`. **They
-rebuild on our commits**: the paragraph added by `88be94a` (2026-09-18) was live the next day.
+fallback lines are dropped in their render; relative links are repointed at `blob/main`. **They do
+NOT rebuild on our commits** — their deploy is a manual `wrangler deploy` from `.11`. The paragraph
+from `88be94a` was live the next day because somebody deployed, and this line used to read that as a
+trigger. Measured 2026-10-03: the `mwk` → `piy` rename sat unpublished, so a change that a reader
+must see needs an issue asking for a deploy (promptityourself-web#102 was the first).
 The v1 prose is gone — the only "Homebrew" left is the kit's own *"Do not install Homebrew"*
 inside prompt one. `assertNarrow` and their `scripts/check-prompts.mjs` are gone with #77.
 
@@ -228,6 +232,12 @@ curl … test/on-this-machine.sh | sh   # a REAL machine. See test/README.md
 
 Pass a **commit SHA**, not a branch — `raw.githubusercontent.com` serves a stale branch for minutes
 after a push, and that has already cost two runs.
+
+**Run, 2026-10-03, against `768f393`: `check.sh` 283/283, `rehearse.sh` ALL GREEN (61
+assertions)** — the 11 new ones are a second user installing `9c62ddd` (the last `mwk`), then
+`mwk update` to the new kit, then `piy update`. Every new `check.sh` assertion was confirmed RED
+against a sabotaged copy first. The first rehearsal (`6a1cf93`) died at 3/6 on nothing in the
+rename: mise itself — see the table.
 
 **Run, 2026-09-25, against `f75ab9d`: `check.sh` 262/262. `rehearse.sh` was NOT run** — the
 day's changes were the suite, a `.github/` link and prose, nothing the container exercises; say

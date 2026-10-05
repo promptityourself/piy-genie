@@ -77,12 +77,15 @@ done
 # mise.toml and assert every prose copy — the number is not a fact any document may hold alone.
 ntools=$(grep -cE '^"aqua:' mise.toml)
 case "$ntools" in 4) w=four;; 5) w=five;; 6) w=six;; 7) w=seven;; 8) w=eight;; *) w="$ntools";; esac
-grep -qi "\b$w pinned tools" prompts/setup.md && ok "setup.md says '$w pinned tools' ($ntools in mise.toml)" \
+# Capitalised with awk, not ${w^}: macOS ships bash 3.2, where ${w^} is "bad substitution" and
+# on-this-machine.sh runs this file there.
+W=$(printf '%s' "$w" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
+grep -qiw "$w pinned tools" prompts/setup.md && ok "setup.md says '$w pinned tools' ($ntools in mise.toml)" \
   || no "setup.md says '$w pinned tools'" "mise.toml has $ntools; the prompt says something else"
-grep -qi "^\*\*\`mise\` is already here and it owns the tools.\*\* ${w^} of them" dot_claude/create_CLAUDE.md \
-  || grep -qi "${w^} of them are pinned" dot_claude/create_CLAUDE.md \
-  && ok "create_CLAUDE.md says '${w^} of them' ($ntools)" \
-  || no "create_CLAUDE.md says '${w^} of them'" "mise.toml has $ntools; the agent's rules say something else"
+grep -qi "^\*\*\`mise\` is already here and it owns the tools.\*\* $W of them" dot_claude/create_CLAUDE.md \
+  || grep -qi "$W of them are pinned" dot_claude/create_CLAUDE.md \
+  && ok "create_CLAUDE.md says '$W of them' ($ntools)" \
+  || no "create_CLAUDE.md says '$W of them'" "mise.toml has $ntools; the agent's rules say something else"
 grep -qE "→ $ntools pinned tools" CLAUDE.md && ok "CLAUDE.md's one-pass says '$ntools pinned tools'" \
   || no "CLAUDE.md's one-pass says '$ntools pinned tools'" "it says something else"
 
@@ -295,7 +298,8 @@ printf '%s\n' "$add_body" | grep -q 'mv "\$f.prev" "\$f"' \
 # because `add` refuses without one. Confirmed red against the pre-fix binary on
 # 2026-08-30; kept red-capable on the plain-key store by the negative case at the end.
 if command -v sops >/dev/null 2>&1 && command -v age-keygen >/dev/null 2>&1 \
-   && command -v script >/dev/null 2>&1 && script -qec true /dev/null >/dev/null 2>&1; then
+   && command -v script >/dev/null 2>&1 \
+   && { script -qec true /dev/null >/dev/null 2>&1 || script -q /dev/null true >/dev/null 2>&1; }; then
   T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
   cp bin/executable_piy "$T/piy"; chmod +x "$T/piy"
   # env -i: this box's own shell exports SOPS_AGE_KEY_FILE, and that contaminated the first
@@ -314,7 +318,7 @@ if command -v sops >/dev/null 2>&1 && command -v age-keygen >/dev/null 2>&1 \
     b=$(mise which "$t" 2>/dev/null || true)
     [ -n "$b" ] && tooldirs="$tooldirs$(dirname "$b"):"
   done
-  noshim=$(printf '%s' "$PATH" | tr ':' '\n' | grep -v 'mise/shims' | paste -sd:)
+  noshim=$(printf '%s' "$PATH" | tr ':' '\n' | grep -v 'mise/shims' | paste -sd: -)
   # NO GIT_AUTHOR_*/GIT_COMMITTER_* here, deliberately. Injecting an identity is the suite
   # arranging the precondition its own "each add is a commit" assertion depends on: git
   # refuses to commit without one, `piy` swallowed that refusal behind `|| true`, and a
@@ -322,7 +326,13 @@ if command -v sops >/dev/null 2>&1 && command -v age-keygen >/dev/null 2>&1 \
   # `piy` now sets a LOCAL identity on the store repo, so this runs clean for a real
   # reason. Put these four variables back and the assertion below stops testing anything.
   clean() { env -i HOME="$T" PATH="$tooldirs$noshim" TERM=dumb PIY_STORE="$T/keys" PIY_KEY="$T/key.txt" "$@"; }
-  cadd()  { clean script -qec "$T/piy add $*" /dev/null; }
+  # A pty either way: GNU script (Linux, WSL) takes -c, BSD script (macOS) takes the command
+  # after the log file. Probed, not guessed from uname, so the form that runs is the one used.
+  if script -qec true /dev/null >/dev/null 2>&1; then
+    cadd()  { clean script -qec "$T/piy add $*" /dev/null; }
+  else
+    cadd()  { clean script -q /dev/null sh -c "$T/piy add $*"; }
+  fi
   names() { clean env SOPS_AGE_KEY_FILE="$T/key.txt" sops -d --input-type dotenv --output-type dotenv "$T/keys/keys.enc.env" 2>/dev/null \
             | grep -oE '^[A-Z]+' | sort -u | tr '\n' ' '; }
   printf 'value-a\n' | cadd ALPHA >/dev/null 2>&1

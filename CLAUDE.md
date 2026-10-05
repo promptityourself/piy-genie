@@ -284,10 +284,15 @@ What v1 had that v2/v3 had lost, brought back without a page or a new command:
   `settings.json`**, set by `modify_settings.json` only if absent — so a value they change
   stays changed, and that is the escape hatch. `claude 2.1.274` has `--permission-mode auto`
   (measured); the docs describe it as a classifier approving each action in the background,
-  versus `bypassPermissions` skipping every check including protected paths. **The one
-  unmeasured thing: the docs say "when auto mode is available to your session".** What
-  `--permission-mode auto` does on an account that lacks it is unknown from this box;
-  `on-this-machine.sh` asks it on a real account. Mate uses auto himself and prefers it.
+  versus `bypassPermissions` skipping every check including protected paths. **Where auto
+  is not available, it falls back to asking — documented, not measured** (read 2026-10-05,
+  `code.claude.com/docs/en/permission-modes`): "Plan: All plans"; it needs a recent model
+  (Opus 4.6+ on the API — the kit's `opus` qualifies) and a Team/Enterprise admin can
+  disable it; and when settings select `auto` but it is unavailable, "Claude Code starts the
+  session in Manual instead" — silently. Also documented: 3 classifier blocks in a row or 20
+  in a session pause auto mode and it asks again. So the failure is a beginner being asked
+  before every step, not a broken session; the howto's "Changing your mind" is the way back.
+  Mate uses auto himself and prefers it.
 - **The status bar** — `~/.claude/statusline.sh`, wired by the same merge. Model, folder,
   `% full`, red past 70. Fields verified against the docs (`model.display_name`,
   `workspace.current_dir`, `context_window.used_percentage`, null before the first reply).

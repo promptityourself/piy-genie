@@ -36,11 +36,8 @@ WINDOWS
 
 MAC
   - Open Terminal from Spotlight (Command+Space, type "terminal"). That is the only setup I need to reach a terminal.
-  - I will need Apple's Command Line Tools before long — real projects want git, the tool that keeps every version of your work, and the copy of git that ships with macOS is a stub that does nothing until Apple's tools are installed. Get it over with now rather than in the middle of something.
-  - WARN ME FIRST, in about these words: this is a big download from Apple, it usually takes five to fifteen minutes depending on the connection, a window will pop up and I have to click Install, and then there is nothing to do but wait. Tell me to go and make a coffee. It does not ask for a password.
-  - Then have me run `xcode-select --install`.
-  - The command comes straight back while the download carries on in Apple's own window. That is the trap: it LOOKS finished when it is not. Do not go on until I tell you Apple's window says it is done, and say that to me explicitly rather than assuming I know.
   - Do not install Homebrew. Nothing in this kit uses it.
+  - Do not install Apple's Command Line Tools here either, even if a message suggests them. The setup does that later, after Claude Code is working.
 
 BOTH, once I have a terminal
   - Tell me plainly, before I sign in to anything, that Claude Code needs a paid Claude plan to be usable, and roughly what it costs. If I do not have one, send me to claude.ai/upgrade and wait for me. Do not skip this to be polite.
@@ -59,6 +56,6 @@ WHEN THAT IS DONE
 
 No Homebrew, and no package manager of any kind. The kit fetches every tool it needs as a pinned binary, on both platforms, from one list.
 
-Apple's Command Line Tools **are** here, and that is a change of mind: the kit itself does not need them, but the person will, the first time they touch a real project. Better a known five-minute wait now than a mystery dialog in the middle of something they care about.
+Apple's Command Line Tools are **not** here any more (mate, 2026-10-06, #8). The kit does not need them, and a five-to-fifteen-minute download before anything has worked is where people give up. Prompt two does it instead: after the install has proved itself, and before the first thing that needs git. Better a known wait after the first win than before it.
 
 Nothing here asks for a password except Windows' own WSL setup, which is Microsoft's step and not ours.

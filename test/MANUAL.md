@@ -85,7 +85,7 @@ lists what it could not test; those are the boxes above.
 
 ## macOS — the same, plus
 
-- [ ] **Command Line Tools:** the prompt warns first, `xcode-select --install` opens Apple's
+- [ ] **Command Line Tools (prompt two, after the install is proved):** the agent warns first, `xcode-select --install` opens Apple's
       window, and the agent waits for you to say it finished rather than assuming.
 - [ ] **No Homebrew appears** (`command -v brew` finds nothing).
 - [ ] **iTerm2 lands in `~/Applications`** with no password asked, and Ctrl+J makes a new line

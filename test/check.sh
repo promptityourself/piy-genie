@@ -274,6 +274,21 @@ grep -q 'elif have_git && \[ ! -e "\$KIT" \]; then' install.sh \
   && ok "a kit that arrived as a tarball is not cloned over" \
   || no "clone insists the directory is absent" "git clone into a non-empty dir is fatal — and piy update is this script"
 
+head_ "On a Mac, something works before the long download (#8)"
+# Apple's Command Line Tools take 5-15 minutes, and the kit does not need them. Prompt one must
+# not start them; prompt two starts them after the install is proved, and before /piy-onboard,
+# which pushes their key store with git.
+is "prompt one does not start the Command Line Tools download" "$(grep -c 'xcode-select --install' prompts/install.md)" "0"
+p=$(grep -n 'PROVE IT WORKED' prompts/setup.md | head -1 | cut -d: -f1)
+x=$(grep -n 'xcode-select --install' prompts/setup.md | head -1 | cut -d: -f1)
+o=$(grep -n 'Run `/piy-onboard`' prompts/setup.md | head -1 | cut -d: -f1)
+if [ -n "$p" ] && [ -n "$x" ] && [ -n "$o" ] && [ "$p" -lt "$x" ] && [ "$x" -lt "$o" ]; then
+  ok "prompt two: prove it worked → Command Line Tools → /piy-onboard"
+else
+  no "prompt two puts the Command Line Tools between the proof and /piy-onboard" "lines: proof=$p xcode=$x onboard=$o"
+fi
+is "HOW-TO.md has no 'copy the grey box' line (the site shows the box above it)" "$(grep -c 'copy the grey box' HOW-TO.md || true)" "0"
+
 head_ "The plugin step works on a machine that has never had one"
 mk=$(grep -n 'claude plugin marketplace add' prompts/setup.md | head -1 | cut -d: -f1)
 pi=$(grep -n 'claude plugin install' prompts/setup.md | head -1 | cut -d: -f1)

@@ -226,7 +226,7 @@ EOF
   fi
   # NOT inside the branch above, and that is the whole point. `git init` used to run only
   # on the add that CREATED the store, so a machine whose git was not ready at that one
-  # moment — a Mac still downloading Apple's Command Line Tools, which prompt one warns
+  # moment — a Mac still downloading Apple's Command Line Tools, which prompt two warns
   # "looks finished when it is not" — never got a repo at all, and every later add
   # committed nothing while printing a green "Stored". Reproduced 2026-09-18. Trying on
   # every add costs nothing: it is a no-op once it has worked.

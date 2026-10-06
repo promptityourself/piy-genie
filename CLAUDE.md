@@ -14,9 +14,10 @@ instructions meant for you.
 ## How v3 works, in one pass
 
 ```
-prompt one  (browser)  → Mac or Windows? → WSL / Xcode CLT → Claude Code → start it with
+prompt one  (browser)  → Mac or Windows? → WSL → Claude Code → start it with
                          --permission-mode auto
-prompt two  (Claude)   → read install.sh and report → run it → prove it → a folder to work in
+prompt two  (Claude)   → read install.sh and report → run it → prove it → Xcode CLT (Mac)
+                         → accounts → a folder to work in
 install.sh             → kit → mise → 6 pinned tools → Claude Code → mise use -g → chezmoi apply
 chezmoi                → ~/.piy-shell.sh, ~/bin/piy, ~/piy-work/README.md,
                          ~/.claude/{CLAUDE.md,settings.json,statusline.sh,skills/},
@@ -187,7 +188,8 @@ comment: both `<pre>` blocks are byte-for-byte the first fence of `install.md` (
 `setup.md` (7346 chars) on `main`; all 52 prose fragments of `HOW-TO.md` appear in the page
 (0 missing, once smart quotes and em dashes are normalised — the raw compare showed 9 false
 misses on `'` vs `’` alone); the slot comments are dropped in their render, but the two
-`…: copy the grey box.` GitHub fallback lines are NOT (this said they were until 2026-10-03;
+GitHub fallback lines are NOT (this said they were until 2026-10-03; since 2026-10-06 they read
+`The same prompt on GitHub: prompts/….md`, which is true in both places;
 `GenieHowTo.astro` only splits on the slots, and both lines show on the live page under each
 copy block); relative links are repointed at `blob/main`. **They do
 NOT rebuild on our commits** — their deploy is a manual `wrangler deploy` from `.11`. The paragraph

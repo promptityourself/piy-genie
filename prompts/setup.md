@@ -42,6 +42,14 @@ THEN — PROVE IT WORKED, IN THEIR WORDS
   - a NEW terminal window knows `piy` — this one matters most, because a shell only reads its settings when it starts, so the shortcut does not exist in the window you are sitting in
   - ~/.claude/CLAUDE.md starts with the line "# How we work". That file is written once and never overwritten, so if they had one already, theirs was kept and none of the rules you are about to follow are in force. If the first line is anything else, say so plainly, show them both, and ask whether to merge — do not overwrite it yourself.
 
+THEN — ON A MAC ONLY: APPLE'S COMMAND LINE TOOLS
+
+Skip this on Windows. On a Mac, ask `xcode-select -p` first; if it answers with a path, they are already there, so say so and move on. Otherwise they are needed now: saving their work uses git, and the git that ships with macOS is a stub that only opens a dialog. The next step puts their keys in a private repo on GitHub, which needs it.
+
+  - WARN THEM FIRST: this is a big download from Apple, usually five to fifteen minutes, a window will pop up and they click Install, and then there is nothing to do but wait. Tell them to go and make a coffee.
+  - Run `xcode-select --install`. It comes straight back while the download carries on in Apple's own window. That is the trap: it LOOKS finished when it is not.
+  - Do not go on until they tell you Apple's window says it is done. Then prove it: `xcode-select -p` answers with a path, and `git --version` answers with a version and opens no dialog.
+
 THEN — TWO THINGS THAT MAKE YOU BETTER AT THIS
 
 Install one plugin and one documentation source, and nothing else. Every extra thing you add costs tokens in every session forever, so this list is short on purpose.

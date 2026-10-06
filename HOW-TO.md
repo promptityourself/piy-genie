@@ -28,21 +28,19 @@ Open [claude.ai](https://claude.ai), a normal chat, nothing special, and paste t
 
 <!-- PROMPT ONE goes here. On GitHub: it is the grey box in prompts/install.md. -->
 
-**[prompts/install.md](prompts/install.md):** copy the grey box.
+The same prompt on GitHub: **[prompts/install.md](prompts/install.md)**
 
 It asks you one question: **Mac or Windows?** Then it walks you through getting Claude Code
 onto your computer, one step at a time, and waits for you to say each one worked.
 
 **In this part, you type the commands.** The chat in your browser cannot touch your
-computer, so it tells you exactly what to type and where, one line at a time. Three things
+computer, so it tells you exactly what to type and where, one line at a time. Two things
 it will warn you about before they happen, so you know what you are looking at:
 
 - **Windows:** it installs a real Ubuntu terminal inside Windows, which needs a restart.
   Afterwards nothing opens by itself; you open Ubuntu from the Start menu. The first time,
   it asks you to invent a username and password, and **the screen shows nothing at all
   while you type the password.** That is normal. It is not your Windows password.
-- **Mac:** Apple's own developer tools download first: five to fifteen minutes, in a
-  window Apple opens, and it looks finished before it is. Wait for Apple's window to say so.
 - **Both:** the last line starts Claude Code with a setting that lets it work without
   asking you about every command. It explains that line before you run it.
 
@@ -55,7 +53,7 @@ In the window step 1 left open, paste this:
 
 <!-- PROMPT TWO goes here. On GitHub: it is the grey box in prompts/setup.md. -->
 
-**[prompts/setup.md](prompts/setup.md):** copy the grey box.
+The same prompt on GitHub: **[prompts/setup.md](prompts/setup.md)**
 
 **From here on, the agent types and you watch.** It will:
 
@@ -65,6 +63,8 @@ In the window step 1 left open, paste this:
    answer, so this is the answer instead.
 2. **Run it.** Two to five minutes, mostly silent. Go and get the coffee.
 3. **Prove it worked**, in plain words, rather than just saying it did.
+   **On a Mac,** it then gets Apple's developer tools: five to fifteen minutes, in a window
+   Apple opens, and it looks finished before it is. Wait for Apple's window to say so.
 4. **Connect your accounts:** GitHub (where your work is saved), Cloudflare (websites,
    domains, email at your own domain) and Replicate (AI models). Each one is proved to
    answer, not assumed. When it needs a key from you, you type it in a second terminal tab,

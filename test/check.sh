@@ -490,7 +490,7 @@ R=$(mktemp -d)
 mkdir -p "$R/mwk-work/proj" "$R/bin" "$R/.claude/skills/mwk-save" "$R/.claude/skills/mwk-mine"
 printf 'their page\n' > "$R/mwk-work/proj/index.html"
 printf 'Type `mwk add NAME`, then /mwk-save. Mate Wish Key, matewishkey.com/show/\nMY OWN LINE\n' > "$R/mwk-work/README.md"
-printf 'Use `mwk run --`, keep pages in ~/mwk-work, never touch mwk-rider\n' > "$R/.claude/CLAUDE.md"
+printf 'Use `mwk run --`, keep pages in ~/mwk-work, audit with mwk-rider\n' > "$R/.claude/CLAUDE.md"
 printf 'export FOO=1\n[ -f "$HOME/.mwk-shell.sh" ] && . "$HOME/.mwk-shell.sh"   # mwk-genie\n' > "$R/.bashrc"
 : > "$R/bin/mwk"; : > "$R/.mwk-shell.sh"
 # The fixture must be there before anything is asserted about what survives it.
@@ -505,7 +505,7 @@ if [ -f "$R/mwk-work/README.md" ] && grep -q mwk-shell "$R/.bashrc" && [ -d "$R/
   is "the howto no longer says mwk or the old name" "$(grep -cE 'mwk|Mate Wish|matewishkey' "$R/piy-work/README.md")" "0"
   grep -q '`piy add NAME`, then /piy-save' "$R/piy-work/README.md" && ok "…it says piy add and /piy-save now" \
     || no "the howto names the new commands" "$(head -1 "$R/piy-work/README.md")"
-  grep -q '`piy run --`, keep pages in ~/piy-work' "$R/.claude/CLAUDE.md" && ok "their agent's rules name piy and ~/piy-work" \
+  grep -q '`piy run --`, keep pages in ~/piy-work, audit with piy-rider' "$R/.claude/CLAUDE.md" && ok "their agent's rules name piy, ~/piy-work and piy-rider" \
     || no "the agent's rules are renamed" "$(cat "$R/.claude/CLAUDE.md")"
   is "the old hook line is out of .bashrc" "$(grep -c mwk-shell "$R/.bashrc" || true)" "0"
   grep -q 'export FOO=1' "$R/.bashrc" && ok "…and the rest of .bashrc is untouched" || no "the rest of .bashrc survives" "it was emptied"

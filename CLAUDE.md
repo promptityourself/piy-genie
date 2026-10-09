@@ -235,8 +235,15 @@ bash test/rehearse.sh <sha>           # minutes, Docker, install → update → 
 curl … test/on-this-machine.sh | sh   # a REAL machine. See test/README.md
 ```
 
-Pass a **commit SHA**, not a branch — `raw.githubusercontent.com` serves a stale branch for minutes
-after a push, and that has already cost two runs.
+Pass a **commit SHA**, not a branch — `test/README.md` says why.
+
+**Run, 2026-10-06, against `00ffbe3`: `check.sh` 290/290. `rehearse.sh` was NOT run at that
+commit** — only prompts, prose and `check.sh` changed since `819b4c8`, and the container does not
+read the prompts. **`rehearse.sh` at `819b4c8`: ALL GREEN, 70 assertions** — the 9 new ones are a
+third user who already uses chezmoi, whose config and dotfiles must survive install and
+`uninstall --all`, and the veteran's old `~/.config/chezmoi` going away after `piy update`.
+`512f93f` made `check.sh` run under bash 3.2 and BSD tools (proved in a `bash:3.2` container;
+the BSD `script` form is unproved until the first Mac run).
 
 **Run, 2026-10-03, against `768f393`: `check.sh` 283/283, `rehearse.sh` ALL GREEN (61
 assertions)** — the 11 new ones are a second user installing `9c62ddd` (the last `mwk`), then
@@ -354,7 +361,7 @@ What v1 had that v2/v3 had lost, brought back without a page or a new command:
   before reaching for anything else"*, Hetzner as the stated exception, and "anything only
   they use on their own computer is fair game". Product names only, no prices — the file
   already says prices move. Astro is named because every real site of ours is one
-  (`mwk-rider` is the auditor + starter); the kit's `site-templates/` stay as the first page.
+  (`piy-rider`, which was `mwk-rider`, is the auditor + starter); the kit's `site-templates/` stay as the first page.
 - **`/piy-wish`** — they explain, we research what already does it, we deliver. Three moves,
   one page of research under `~/piy-work/<slug>/<date>_wish/` (the first real customer of
   the folder server), an answer that must be one of *use X / build the smallest version /
@@ -445,3 +452,5 @@ exposed the `.chezmoiignore` row in the table above.
 | # | |
 |---|---|
 | **#14** | The show is mentioned exactly twice now (`README.md`, the howto) and `check.sh` counts it. Whether that tone is right is mate's — open until he says |
+| **#9** | No real Mac or Windows run yet. The Mac run is staged: `work.l/pro-piy-genie/2026-10-03_mac-test/` (a NEW macOS user, never a fleet account) |
+| **#2** | Nobody has walked `test/MANUAL.md` by hand |

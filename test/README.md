@@ -40,8 +40,9 @@ thing being tested.
 
 ## What is not covered, and cannot be
 
-- **macOS.** Everything here runs on Linux or in a Linux container. The Mac path — Command
-  Line Tools, iTerm2, no `timeout`, no pinentry — has no automated coverage at all.
+- **macOS.** `check.sh` is written to run under macOS's bash 3.2 and BSD tools, and
+  `on-this-machine.sh` runs it there — but neither has run on a real Mac yet. The Mac install
+  path (iTerm2, no `timeout`, no pinentry) has no other coverage.
 - **The browser half.** Signing in, a paid plan, whether prompt one reads well to someone
   who has never done this.
 - **Whether the agent behaves.** The scripts check what lands on disk. They cannot check

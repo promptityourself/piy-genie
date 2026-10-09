@@ -31,8 +31,9 @@ deliberately testing something unmerged.
       and the new tab is Ubuntu, not `PS C:\`. **This is the gap a beginner hits first.**
 - [ ] **`claude --permission-mode auto` starts** — and then: **does it ask before commands, or
       not?** This is the single most important measurement on this list. The docs say auto
-      mode is available "when available to your session"; nobody has run it on a fresh
-      consumer account. Note exactly what the first command did.
+      mode is on all plans, and where it is not available the session starts in Manual and
+      asks before each step, silently. Nobody has run it on a fresh consumer account. Note
+      exactly what the first command did.
 - [ ] **Sign-in opens the Windows browser**, and the prompt said it would.
 
 ## Prompt two — inside Claude Code
